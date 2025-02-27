@@ -6,18 +6,20 @@ import { useStores } from "../models"
 import { AppStackScreenProps } from "../navigators"
 import type { ThemedStyle } from "@/theme"
 import { useAppTheme } from "@/utils/useAppTheme"
+import { useAuth } from "@/services/auth/useAuth"
+
 
 interface LoginScreenProps extends AppStackScreenProps<"Login"> {}
 
 export const LoginScreen: FC<LoginScreenProps> = observer(function LoginScreen(_props) {
   const authPasswordInput = useRef<TextInput>(null)
-
+  const { signIn } = useAuth()
   const [authPassword, setAuthPassword] = useState("")
   const [isAuthPasswordHidden, setIsAuthPasswordHidden] = useState(true)
   const [isSubmitted, setIsSubmitted] = useState(false)
   const [attemptsCount, setAttemptsCount] = useState(0)
   const {
-    authenticationStore: { authEmail, setAuthEmail, setAuthToken, validationError },
+    authenticationStore: { authEmail,setAuthEmail, validationError },
   } = useStores()
 
   const {
@@ -25,35 +27,26 @@ export const LoginScreen: FC<LoginScreenProps> = observer(function LoginScreen(_
     theme: { colors },
   } = useAppTheme()
 
-  useEffect(() => {
-    // Here is where you could fetch credentials from keychain or storage
-    // and pre-fill the form fields.
-    setAuthEmail("ignite@infinite.red")
-    setAuthPassword("ign1teIsAwes0m3")
-
-    // Return a "cleanup" function that React will run when the component unmounts
-    return () => {
-      setAuthPassword("")
-      setAuthEmail("")
-    }
-  }, [setAuthEmail])
-
   const error = isSubmitted ? validationError : ""
 
-  function login() {
+  async function signInWithEmail() {
     setIsSubmitted(true)
-    setAttemptsCount(attemptsCount + 1)
+    setAttemptsCount((prev) => prev + 1)
+    
+    const {error} = await signIn({ email: authEmail, password: authPassword })
 
-    if (validationError) return
+    if (error) {
+      // Exibe erro de autenticação se houver
+      setIsSubmitted(false)
+      return
+    }
 
-    // Make a request to your server to get an authentication token.
-    // If successful, reset the fields and set the token.
+    
     setIsSubmitted(false)
-    setAuthPassword("")
-    setAuthEmail("")
+    setAuthPassword("") 
+    setAuthEmail("")    
 
-    // We'll mock this with a fake token.
-    setAuthToken(String(Date.now()))
+   
   }
 
   const PasswordRightAccessory: ComponentType<TextFieldAccessoryProps> = useMemo(
@@ -110,7 +103,7 @@ export const LoginScreen: FC<LoginScreenProps> = observer(function LoginScreen(_
         secureTextEntry={isAuthPasswordHidden}
         labelTx="loginScreen:passwordFieldLabel"
         placeholderTx="loginScreen:passwordFieldPlaceholder"
-        onSubmitEditing={login}
+        onSubmitEditing={signInWithEmail}
         RightAccessory={PasswordRightAccessory}
       />
 
@@ -119,7 +112,7 @@ export const LoginScreen: FC<LoginScreenProps> = observer(function LoginScreen(_
         tx="loginScreen:tapToLogIn"
         style={themed($tapButton)}
         preset="reversed"
-        onPress={login}
+        onPress={signInWithEmail}
       />
     </Screen>
   )

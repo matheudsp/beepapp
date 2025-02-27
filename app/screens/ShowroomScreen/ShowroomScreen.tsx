@@ -5,7 +5,7 @@ import { Drawer } from "react-native-drawer-layout"
 import { type ContentStyle } from "@shopify/flash-list"
 import { ListItem, ListView, ListViewRef, Screen, Text } from "../../components"
 import { TxKeyPath, isRTL, translate } from "@/i18n"
-import { DemoTabParamList, DemoTabScreenProps } from "../../navigators/DemoNavigator"
+import { TabParamList, TabScreenProps } from "../../navigators/Navigator"
 import type { Theme, ThemedStyle } from "@/theme"
 import { $styles } from "@/theme"
 import { useSafeAreaInsetsStyle } from "../../utils/useSafeAreaInsetsStyle"
@@ -83,13 +83,13 @@ const NativeListItem: FC<DemoListItem> = ({ item, sectionIndex, handleScroll }) 
 const ShowroomListItem = Platform.select({ web: WebListItem, default: NativeListItem })
 const isAndroid = Platform.OS === "android"
 
-export const DemoShowroomScreen: FC<DemoTabScreenProps<"DemoShowroom">> =
+export const ShowroomScreen: FC<TabScreenProps<"Showroom">> =
   function DemoShowroomScreen(_props) {
     const [open, setOpen] = useState(false)
     const timeout = useRef<ReturnType<typeof setTimeout>>()
     const listRef = useRef<SectionList>(null)
     const menuRef = useRef<ListViewRef<DemoListItem["item"]>>(null)
-    const route = useRoute<RouteProp<DemoTabParamList, "DemoShowroom">>()
+    const route = useRoute<RouteProp<TabParamList, "Showroom">>()
     const params = route.params
 
     const { themed, theme } = useAppTheme()

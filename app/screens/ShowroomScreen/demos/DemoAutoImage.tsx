@@ -3,9 +3,9 @@ import { Image, ImageStyle, TextStyle, View, ViewStyle } from "react-native"
 import { AutoImage, Text } from "../../../components"
 import type { ThemedStyle } from "../../../theme"
 import { $styles } from "../../../theme"
-import { Demo } from "../DemoShowroomScreen"
-import { DemoDivider } from "../DemoDivider"
-import { DemoUseCase } from "../DemoUseCase"
+import { Demo } from "../ShowroomScreen"
+import { DemoDivider } from "../Divider"
+import { DemoUseCase } from "../UseCase"
 import { translate } from "@/i18n"
 
 const $imageContainer: ViewStyle = {

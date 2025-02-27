@@ -10,9 +10,9 @@ import {
   SwitchToggleProps,
   Text,
 } from "@/components"
-import { Demo } from "../DemoShowroomScreen"
-import { DemoDivider } from "../DemoDivider"
-import { DemoUseCase } from "../DemoUseCase"
+import { Demo } from "../ShowroomScreen"
+import { DemoDivider } from "../Divider"
+import { DemoUseCase } from "../UseCase"
 import { $styles, type ThemedStyle } from "@/theme"
 import { translate } from "@/i18n"
 

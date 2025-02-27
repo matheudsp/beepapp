@@ -2,43 +2,39 @@ import { FC, useCallback, useMemo } from "react"
 import * as Application from "expo-application"
 import {
   LayoutAnimation,
-  Linking,
   Platform,
   TextStyle,
-  useColorScheme,
   View,
   ViewStyle,
+  type ImageStyle,
 } from "react-native"
-import { Button, ListItem, Screen, Text } from "../components"
-import { DemoTabScreenProps } from "../navigators/DemoNavigator"
+import { Button, Icon, ListItem, Screen, Text } from "../../components"
+import { AppStackScreenProps } from "../../navigators"
 import type { ThemedStyle } from "@/theme"
-import { $styles } from "../theme"
-import { isRTL } from "@/i18n"
-import { useStores } from "../models"
+import { $styles } from "../../theme"
 import { useAppTheme } from "@/utils/useAppTheme"
+import React from "react"
 
 /**
  * @param {string} url - The URL to open in the browser.
  * @returns {void} - No return value.
  */
-function openLinkInBrowser(url: string) {
-  Linking.canOpenURL(url).then((canOpen) => canOpen && Linking.openURL(url))
-}
+
 
 const usingHermes = typeof HermesInternal === "object" && HermesInternal !== null
 
-export const DemoDebugScreen: FC<DemoTabScreenProps<"DemoDebug">> = function DemoDebugScreen(
+interface DevScreenProps extends AppStackScreenProps<"Dev"> { }
+
+export const DevScreen: FC<DevScreenProps> = function DevScreen(
   _props,
 ) {
   const { setThemeContextOverride, themeContext, themed } = useAppTheme()
-  const {
-    authenticationStore: { logout },
-  } = useStores()
 
+  const { navigation } = _props
   // @ts-expect-error
   const usingFabric = global.nativeFabricUIManager != null
 
-  const demoReactotron = useMemo(
+  const Reactotron = useMemo(
     () => async () => {
       if (__DEV__) {
         console.tron.display({
@@ -62,8 +58,7 @@ export const DemoDebugScreen: FC<DemoTabScreenProps<"DemoDebug">> = function Dem
     setThemeContextOverride(themeContext === "dark" ? "light" : "dark")
   }, [themeContext, setThemeContextOverride])
 
-  // Resets the theme to the system theme
-  const colorScheme = useColorScheme()
+
   const resetTheme = useCallback(() => {
     LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut)
     setThemeContextOverride(undefined)
@@ -75,21 +70,33 @@ export const DemoDebugScreen: FC<DemoTabScreenProps<"DemoDebug">> = function Dem
       safeAreaEdges={["top"]}
       contentContainerStyle={[$styles.container, themed($container)]}
     >
-      <Text
-        style={themed($reportBugsLink)}
-        tx="demoDebugScreen:reportBugs"
-        onPress={() => openLinkInBrowser("https://github.com/infinitered/ignite/issues")}
-      />
 
-      <Text style={themed($title)} preset="heading" tx="demoDebugScreen:title" />
-      <Text preset="bold">Current system theme: {colorScheme}</Text>
-      <Text preset="bold">Current app theme: {themeContext}</Text>
-      <Button onPress={resetTheme} text={`Reset`} />
-
-      <View style={themed($itemsContainer)}>
-        <Button onPress={toggleTheme} text={`Toggle Theme: ${themeContext}`} />
+      <View style={themed($hstack)} >
+        <Icon style={themed($buttonIcon)} icon="back" onPress={() => { navigation.goBack() }} />
+        <Text preset="heading" text="Developer Options" />
       </View>
+
+      <Button onPress={resetTheme} text={`Reset theme`} />
       <View style={themed($itemsContainer)}>
+        <Button onPress={toggleTheme} text={`Switch Theme: ${themeContext}`} />
+      </View>
+
+      <View style={themed($buttonContainer)}>
+        <Button style={themed($button)} tx="AccountScreen:reactotron" onPress={Reactotron} />
+        <Text style={themed($hint)} tx={`AccountScreen:${Platform.OS}ReactotronHint` as const} />
+      </View>
+
+      <View style={themed($itemsContainer)}>
+
+        <ListItem
+          LeftComponent={
+            <View style={themed($item)}>
+              <Text preset="bold" tx="AccountScreen:appVersion" />
+              <Text>{Application.nativeApplicationVersion}</Text>
+            </View>
+          }
+        />
+
         <ListItem
           LeftComponent={
             <View style={themed($item)}>
@@ -106,14 +113,7 @@ export const DemoDebugScreen: FC<DemoTabScreenProps<"DemoDebug">> = function Dem
             </View>
           }
         />
-        <ListItem
-          LeftComponent={
-            <View style={themed($item)}>
-              <Text preset="bold">App Version</Text>
-              <Text>{Application.nativeApplicationVersion}</Text>
-            </View>
-          }
-        />
+
         <ListItem
           LeftComponent={
             <View style={themed($item)}>
@@ -138,14 +138,11 @@ export const DemoDebugScreen: FC<DemoTabScreenProps<"DemoDebug">> = function Dem
             </View>
           }
         />
+
+
       </View>
-      <View style={themed($buttonContainer)}>
-        <Button style={themed($button)} tx="demoDebugScreen:reactotron" onPress={demoReactotron} />
-        <Text style={themed($hint)} tx={`demoDebugScreen:${Platform.OS}ReactotronHint` as const} />
-      </View>
-      <View style={themed($buttonContainer)}>
-        <Button style={themed($button)} tx="common:logOut" onPress={logout} />
-      </View>
+
+
     </Screen>
   )
 }
@@ -156,13 +153,25 @@ const $container: ThemedStyle<ViewStyle> = ({ spacing }) => ({
 
 const $title: ThemedStyle<TextStyle> = ({ spacing }) => ({
   marginBottom: spacing.xxl,
+
 })
 
-const $reportBugsLink: ThemedStyle<TextStyle> = ({ colors, spacing }) => ({
-  color: colors.tint,
-  marginBottom: spacing.lg,
-  alignSelf: isRTL ? "flex-start" : "flex-end",
+const $buttonIcon: ThemedStyle<ImageStyle> = ({ spacing }) => ({
+  padding: spacing.md,
+  display: 'flex',
+  alignContent: 'center',
+  alignItems: "center",
+
 })
+
+const $hstack: ThemedStyle<ViewStyle> = ({ spacing }) => ({
+  display: "flex",
+  flexDirection: "row",
+  alignItems: 'center',
+  gap: spacing.md,
+  marginBottom: spacing.xl
+})
+
 
 const $item: ThemedStyle<ViewStyle> = ({ spacing }) => ({
   marginBottom: spacing.md,

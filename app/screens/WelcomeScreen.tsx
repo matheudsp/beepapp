@@ -9,6 +9,7 @@ import { $styles, type ThemedStyle } from "@/theme"
 import { useHeader } from "../utils/useHeader"
 import { useSafeAreaInsetsStyle } from "../utils/useSafeAreaInsetsStyle"
 import { useAppTheme } from "@/utils/useAppTheme"
+import { useAuth } from "@/services/auth/useAuth"
 
 const welcomeLogo = require("../../assets/images/logo.png")
 const welcomeFace = require("../../assets/images/welcome-face.png")
@@ -19,20 +20,21 @@ export const WelcomeScreen: FC<WelcomeScreenProps> = observer(function WelcomeSc
   const { themed, theme } = useAppTheme()
 
   const { navigation } = _props
-  const {
-    authenticationStore: { logout },
-  } = useStores()
+  // const {
+  //   authenticationStore: { logout },
+  // } = useStores()
+  const { signOut } = useAuth()
 
   function goNext() {
-    navigation.navigate("Demo", { screen: "DemoShowroom", params: {} })
+    navigation.navigate("Stack", { screen: "Home"})
   }
 
   useHeader(
     {
       rightTx: "common:logOut",
-      onRightPress: logout,
+      onRightPress: signOut,
     },
-    [logout],
+    [signOut],
   )
 
   const $bottomContainerInsets = useSafeAreaInsetsStyle(["bottom"])

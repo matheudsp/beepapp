@@ -10,11 +10,12 @@ import { observer } from "mobx-react-lite"
 import * as Screens from "@/screens"
 import Config from "../config"
 import { useStores } from "../models"
-import { DemoNavigator, DemoTabParamList } from "./DemoNavigator"
+import { Navigator, TabParamList } from "./Navigator"
 import { navigationRef, useBackButtonHandler } from "./navigationUtilities"
 import { useAppTheme, useThemeProvider } from "@/utils/useAppTheme"
 import { ComponentProps } from "react"
-
+import React from "react"
+import { useAuth } from "app/services/auth/useAuth"
 /**
  * This type allows TypeScript to know what routes are defined in this navigator
  * as well as what properties (if any) they might take when navigating to them.
@@ -31,9 +32,10 @@ import { ComponentProps } from "react"
 export type AppStackParamList = {
   Welcome: undefined
   Login: undefined
-  Demo: NavigatorScreenParams<DemoTabParamList>
+  Stack: NavigatorScreenParams<TabParamList>
   // 🔥 Your screens go here
   // IGNITE_GENERATOR_ANCHOR_APP_STACK_PARAM_LIST
+  Dev: undefined
 }
 
 /**
@@ -51,13 +53,10 @@ export type AppStackScreenProps<T extends keyof AppStackParamList> = NativeStack
 const Stack = createNativeStackNavigator<AppStackParamList>()
 
 const AppStack = observer(function AppStack() {
-  const {
-    authenticationStore: { isAuthenticated },
-  } = useStores()
-
-  const {
-    theme: { colors },
-  } = useAppTheme()
+  const { isAuthenticated } = useAuth()
+  const {theme: { colors }} = useAppTheme()
+  
+  
 
   return (
     <Stack.Navigator
@@ -67,6 +66,7 @@ const AppStack = observer(function AppStack() {
         contentStyle: {
           backgroundColor: colors.background,
         },
+        animation:"slide_from_left"
       }}
       initialRouteName={isAuthenticated ? "Welcome" : "Login"}
     >
@@ -74,7 +74,9 @@ const AppStack = observer(function AppStack() {
         <>
           <Stack.Screen name="Welcome" component={Screens.WelcomeScreen} />
 
-          <Stack.Screen name="Demo" component={DemoNavigator} />
+          <Stack.Screen name="Stack" component={Navigator} />
+
+          <Stack.Screen name="Dev" component={Screens.DevScreen} />
         </>
       ) : (
         <>

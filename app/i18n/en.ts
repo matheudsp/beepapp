@@ -1,4 +1,4 @@
-import demoEn from "./demo-en"
+
 
 const en = {
   common: {
@@ -43,13 +43,11 @@ const en = {
     tapToLogIn: "Tap to log in!",
     hint: "Hint: you can use any email address and your favorite password :)",
   },
-  demoNavigator: {
-    componentsTab: "Components",
-    debugTab: "Debug",
-    communityTab: "Community",
-    podcastListTab: "Podcast",
+  Navigator: {
+    accountTab: "Account",
+    podcastListTab: "Home",
   },
-  demoCommunityScreen: {
+  CommunityScreen: {
     title: "Connect with the community",
     tagLine:
       "Plug in to Infinite Red's community of React Native engineers and level up your app development with us!",
@@ -72,23 +70,16 @@ const en = {
       "Whether it's running a full project or getting teams up to speed with our hands-on training, Infinite Red can help with just about any React Native project.",
     hireUsLink: "Send us a message",
   },
-  demoShowroomScreen: {
-    jumpStart: "Components to jump start your project!",
-    lorem2Sentences:
-      "Nulla cupidatat deserunt amet quis aliquip nostrud do adipisicing. Adipisicing excepteur elit laborum Lorem adipisicing do duis.",
-    demoHeaderTxExample: "Yay",
-    demoViaTxProp: "Via `tx` Prop",
-    demoViaSpecifiedTxProp: "Via `{{prop}}Tx` Prop",
-  },
-  demoDebugScreen: {
+  AccountScreen: {
     howTo: "HOW TO",
-    title: "Debug",
+    title: "Account",
     tagLine:
       "Congratulations, you've got a very advanced React Native app template here.  Take advantage of this boilerplate!",
     reactotron: "Send to Reactotron",
     reportBugs: "Report Bugs",
-    demoList: "Demo List",
-    demoPodcastList: "Demo Podcast List",
+    List: " List",
+    PodcastList: " Podcast List",
+    appVersion:"Version App",
     androidReactotronHint:
       "If this doesn't work, ensure the Reactotron desktop app is running, run adb reverse tcp:9090 tcp:9090 from your terminal, and reload the app.",
     iosReactotronHint:
@@ -100,7 +91,7 @@ const en = {
     windowsReactotronHint:
       "If this doesn't work, ensure the Reactotron desktop app is running and reload app.",
   },
-  demoPodcastListScreen: {
+  HomeScreen: {
     title: "React Native Radio episodes",
     onlyFavorites: "Only Show Favorites",
     favoriteButton: "Favorite",
@@ -121,9 +112,7 @@ const en = {
         "No favorites have been added yet. Tap the heart on an episode to add it to your favorites!",
     },
   },
-
-  ...demoEn,
 }
 
 export default en
-export type Translations = typeof en
+

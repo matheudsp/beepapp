@@ -1,10 +1,10 @@
 {
-  "name": "onlyviagens",
-  "displayName": "onlyviagens",
+  "name": "beep",
+  "displayName": "beep",
   "expo": {
-    "name": "onlyviagens",
-    "slug": "onlyviagens",
-    "scheme": "onlyviagens",
+    "name": "beep",
+    "slug": "beep",
+    "scheme": "beep",
     "version": "1.0.0",
     "orientation": "portrait",
     "userInterfaceStyle": "automatic",
@@ -19,7 +19,7 @@
     ],
     "android": {
       "icon": "./assets/images/app-icon-android-legacy.png",
-      "package": "com.onlyviagens",
+      "package": "com.beep",
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/app-icon-android-adaptive-foreground.png",
         "backgroundImage": "./assets/images/app-icon-android-adaptive-background.png"
@@ -28,7 +28,7 @@
     "ios": {
       "icon": "./assets/images/app-icon-ios.png",
       "supportsTablet": true,
-      "bundleIdentifier": "com.onlyviagens"
+      "bundleIdentifier": "com.beep"
     },
     "web": {
       "favicon": "./assets/images/app-icon-web-favicon.png",

@@ -14,7 +14,7 @@ interface DemoDividerProps {
  * @param {DemoDividerProps} props - The props for the `DemoDivider` component.
  * @returns {JSX.Element} The rendered `DemoDivider` component.
  */
-export function DemoDivider(props: DemoDividerProps) {
+export function Divider(props: DemoDividerProps) {
   const { type = "horizontal", size = 10, line = false, style: $styleOverride } = props
   const { themed } = useAppTheme()
 

@@ -2,9 +2,9 @@
 import { TextStyle, ViewStyle } from "react-native"
 import { Icon, TextField } from "../../../components"
 import type { ThemedStyle } from "../../../theme"
-import { Demo } from "../DemoShowroomScreen"
-import { DemoDivider } from "../DemoDivider"
-import { DemoUseCase } from "../DemoUseCase"
+import { Demo } from "../ShowroomScreen"
+import { DemoDivider } from "../Divider"
+import { DemoUseCase } from "../UseCase"
 
 const $customInputStyle: ThemedStyle<TextStyle> = ({ colors }) => ({
   backgroundColor: colors.error,

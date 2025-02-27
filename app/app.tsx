@@ -32,6 +32,7 @@ import { customFontsToLoad } from "./theme"
 import Config from "./config"
 import { KeyboardProvider } from "react-native-keyboard-controller"
 import { loadDateFnsLocale } from "./utils/formatDate"
+import { AuthProvider } from "./services/auth/useAuth"
 
 export const NAVIGATION_PERSISTENCE_KEY = "NAVIGATION_STATE"
 
@@ -45,12 +46,12 @@ const config = {
     Welcome: "welcome",
     Demo: {
       screens: {
-        DemoShowroom: {
+        Showroom: {
           path: "showroom/:queryIndex?/:itemIndex?",
         },
-        DemoDebug: "debug",
-        DemoPodcastList: "podcast",
-        DemoCommunity: "community",
+        Account: "account",
+        Home: "home",
+        
       },
     },
   },
@@ -107,6 +108,7 @@ export function App() {
 
   // otherwise, we're ready to render the app
   return (
+    <AuthProvider>
     <SafeAreaProvider initialMetrics={initialWindowMetrics}>
       <ErrorBoundary catchErrors={Config.catchErrors}>
         <KeyboardProvider>
@@ -118,5 +120,6 @@ export function App() {
         </KeyboardProvider>
       </ErrorBoundary>
     </SafeAreaProvider>
+    </AuthProvider>
   )
 }

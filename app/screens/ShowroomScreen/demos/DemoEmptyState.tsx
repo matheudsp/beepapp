@@ -1,8 +1,8 @@
 /* eslint-disable react/jsx-key, react-native/no-inline-styles */
 import { EmptyState } from "../../../components"
-import { DemoDivider } from "../DemoDivider"
-import { Demo } from "../DemoShowroomScreen"
-import { DemoUseCase } from "../DemoUseCase"
+import { DemoDivider } from "../Divider"
+import { Demo } from "../ShowroomScreen"
+import { DemoUseCase } from "../UseCase"
 
 export const DemoEmptyState: Demo = {
   name: "EmptyState",
