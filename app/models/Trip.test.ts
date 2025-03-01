@@ -1,4 +1,4 @@
-import { EpisodeModel } from "./Episode"
+import { TripModel } from "./Trip"
 
 const data = {
   guid: "f91f2ea0-378a-4a90-9a83-d438a0cc32f6",
@@ -22,18 +22,18 @@ const data = {
     },
   },
 }
-const episode = EpisodeModel.create(data)
+const trip = TripModel.create(data)
 
 test("publish date format", () => {
-  expect(episode.datePublished.textLabel).toBe("Jan 20, 2022")
-  expect(episode.datePublished.accessibilityLabel).toBe(
+  expect(trip.datePublished.textLabel).toBe("Jan 20, 2022")
+  expect(trip.datePublished.accessibilityLabel).toBe(
     "demoPodcastListScreen:accessibility.publishLabel",
   )
 })
 
 test("duration format", () => {
-  expect(episode.duration.textLabel).toBe("42:58")
-  expect(episode.duration.accessibilityLabel).toBe(
+  expect(trip.duration.textLabel).toBe("42:58")
+  expect(trip.duration.accessibilityLabel).toBe(
     "demoPodcastListScreen:accessibility.durationLabel",
   )
 })

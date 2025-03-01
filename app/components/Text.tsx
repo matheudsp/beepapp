@@ -8,7 +8,7 @@ import { ReactNode } from "react"
 
 type Sizes = keyof typeof $sizeStyles
 type Weights = keyof typeof typography.primary
-type Presets = "default" | "bold" | "heading" | "subheading" | "formLabel" | "formHelper"
+type Presets = "default" | "bold" | "heading" | "subheading" | "formLabel" | "formHelper" | "link"
 
 export interface TextProps extends RNTextProps {
   /**
@@ -109,5 +109,6 @@ const $presets: Record<Presets, ThemedStyleArray<TextStyle>> = {
   subheading: [$baseStyle, { ...$sizeStyles.lg, ...$fontWeightStyles.medium }],
   formLabel: [$baseStyle, { ...$fontWeightStyles.medium }],
   formHelper: [$baseStyle, { ...$sizeStyles.sm, ...$fontWeightStyles.normal }],
+  link:[$baseStyle,{...$fontWeightStyles.medium, textDecorationLine:'underline'}]
 }
 const $rtlStyle: TextStyle = isRTL ? { writingDirection: "rtl" } : {}

@@ -68,6 +68,8 @@ export const WelcomeScreen: FC<WelcomeScreenProps> = observer(function WelcomeSc
           onPress={goNext}
         />
       </View>
+
+    
     </Screen>
   )
 })

@@ -1,4 +1,32 @@
 import { MMKV } from "react-native-mmkv"
+import * as SecureStore from "expo-secure-store"
+import {randomUUID} from "expo-crypto"
+
+
+/**
+ * Need fix for work in web
+ * Origin: SecureStore lib
+ */
+// const fetchOrGenerateEncryptionKey = (): string => {
+//   const encryptionKey = SecureStore.getItem("session-encryption-key")
+
+//   if (encryptionKey) {
+//     return encryptionKey
+//   } else {
+//     const uuid = randomUUID()
+//     SecureStore.setItem("session-encryption-key", uuid)
+//     return uuid
+//   }
+// }
+
+
+// export const storage = new MMKV({
+//   id:"user-storage",
+//   encryptionKey: fetchOrGenerateEncryptionKey()
+// })
+// storage.set("workaround", true)
+
+
 export const storage = new MMKV()
 
 /**
@@ -68,7 +96,7 @@ export function save(key: string, value: unknown): boolean {
 export function remove(key: string): void {
   try {
     storage.delete(key)
-  } catch {}
+  } catch { }
 }
 
 /**
@@ -77,5 +105,5 @@ export function remove(key: string): void {
 export function clear(): void {
   try {
     storage.clearAll()
-  } catch {}
+  } catch { }
 }

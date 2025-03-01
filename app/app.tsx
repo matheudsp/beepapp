@@ -33,7 +33,7 @@ import Config from "./config"
 import { KeyboardProvider } from "react-native-keyboard-controller"
 import { loadDateFnsLocale } from "./utils/formatDate"
 import { AuthProvider } from "./services/auth/useAuth"
-
+import { Toaster } from "burnt/web";
 export const NAVIGATION_PERSISTENCE_KEY = "NAVIGATION_STATE"
 
 // Web linking configuration
@@ -51,7 +51,7 @@ const config = {
         },
         Account: "account",
         Home: "home",
-        
+
       },
     },
   },
@@ -109,17 +109,18 @@ export function App() {
   // otherwise, we're ready to render the app
   return (
     <AuthProvider>
-    <SafeAreaProvider initialMetrics={initialWindowMetrics}>
-      <ErrorBoundary catchErrors={Config.catchErrors}>
-        <KeyboardProvider>
-          <AppNavigator
-            linking={linking}
-            initialState={initialNavigationState}
-            onStateChange={onNavigationStateChange}
-          />
-        </KeyboardProvider>
-      </ErrorBoundary>
-    </SafeAreaProvider>
+      <Toaster />
+      <SafeAreaProvider initialMetrics={initialWindowMetrics}>
+        <ErrorBoundary catchErrors={Config.catchErrors}>
+          <KeyboardProvider>
+            <AppNavigator
+              linking={linking}
+              initialState={initialNavigationState}
+              onStateChange={onNavigationStateChange}
+            />
+          </KeyboardProvider>
+        </ErrorBoundary>
+      </SafeAreaProvider>
     </AuthProvider>
   )
 }

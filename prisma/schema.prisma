@@ -1,5 +1,6 @@
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
+  previewFeatures = ["reactNative"]
 }
 
 datasource db {
@@ -7,4 +8,62 @@ datasource db {
   url       = env("DATABASE_URL")
   directUrl = env("DIRECT_URL")
 }
-        
+
+model Profile {
+  id            String  @id @db.Uuid
+  profile_image String?
+  email         String?
+  cpf           String?
+  phone_number  String?
+  first_name    String?
+  last_name     String?
+
+  role     Role      @default(PASSENGER)
+  trips    Trip[]    @relation("DriverTrips") // Motorista pode criar várias viagens
+  bookings Booking[] // Passageiro pode ter várias reservas
+
+  @@map("profiles")
+}
+
+enum Role {
+  DRIVER
+  PASSENGER
+}
+
+model Trip {
+  id          String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  driver      Profile   @relation("DriverTrips", fields: [driver_id], references: [id])
+  driver_id   String    @db.Uuid
+  departure   DateTime
+  origin      String
+  destination String
+  seats       Int
+  bookings    Booking[]
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  @@map("trips")
+}
+
+model Booking {
+  id            String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  trip          Trip          @relation(fields: [trip_id], references: [id])
+  trip_id       String        @db.Uuid
+  passenger     Profile       @relation(fields: [passenger_id], references: [id])
+  passenger_id  String        @db.Uuid
+  pickup_point  String
+  dropoff_point String
+  status        BookingStatus @default(PENDING) // Status da reserva
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  @@map("bookings")
+}
+
+enum BookingStatus {
+  PENDING // Aguardando aprovação
+  CONFIRMED // Confirmado
+  CANCELED // Cancelado
+}

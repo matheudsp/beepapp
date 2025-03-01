@@ -7,14 +7,16 @@ import { AppStackScreenProps } from "../navigators"
 import type { ThemedStyle } from "@/theme"
 import { useAppTheme } from "@/utils/useAppTheme"
 import { useAuth } from "@/services/auth/useAuth"
-import * as Toast from 'burnt'
 
-interface LoginScreenProps extends AppStackScreenProps<"Login"> { }
 
-export const LoginScreen: FC<LoginScreenProps> = observer(function LoginScreen(_props) {
+interface RegisterScreenProps extends AppStackScreenProps<"Register"> { }
+
+export const RegisterScreen: FC<RegisterScreenProps> = observer(function RegisterScreen(_props) {
   const authPasswordInput = useRef<TextInput>(null)
   const { signIn } = useAuth()
   const [authPassword, setAuthPassword] = useState("")
+  const [firstName, setFirstName] = useState("")
+  const [lastName, setLastName] = useState("")
   const [isAuthPasswordHidden, setIsAuthPasswordHidden] = useState(true)
   const [isSubmitted, setIsSubmitted] = useState(false)
   const [attemptsCount, setAttemptsCount] = useState(0)
@@ -23,8 +25,8 @@ export const LoginScreen: FC<LoginScreenProps> = observer(function LoginScreen(_
   } = useStores()
   const { navigation } = _props
 
-  function goRegister() {
-    navigation.navigate("Register")
+  function goLogin() {
+    navigation.navigate("Login")
   }
 
   const {
@@ -76,11 +78,39 @@ export const LoginScreen: FC<LoginScreenProps> = observer(function LoginScreen(_
       contentContainerStyle={themed($screenContentContainer)}
       safeAreaEdges={["top", "bottom"]}
     >
-      <Text testID="login-heading" tx="loginScreen:logIn" preset="heading" style={themed($logIn)} />
-      <Text tx="loginScreen:enterDetails" preset="subheading" style={themed($enterDetails)} />
+      <Text testID="register-heading" tx="registerScreen:register" preset="heading" style={themed($register)} />
+      <Text tx="registerScreen:enterDetails" preset="subheading" style={themed($enterDetails)} />
       {attemptsCount > 2 && (
-        <Text tx="loginScreen:hint" size="sm" weight="light" style={themed($hint)} />
+        <Text tx="registerScreen:hint" size="sm" weight="light" style={themed($hint)} />
       )}
+       <TextField
+        value={firstName}
+        onChangeText={setFirstName}
+        containerStyle={themed($textField)}
+        autoCapitalize="none"
+        autoComplete="name"
+        autoCorrect={false}
+        keyboardType="default"
+        labelTx="registerScreen:nameFieldLabel"
+        placeholderTx="registerScreen:nameFieldPlaceholder"
+        helper={error}
+        status={error ? "error" : undefined}
+        onSubmitEditing={() => authPasswordInput.current?.focus()}
+      />
+       <TextField
+        value={lastName}
+        onChangeText={setLastName}
+        containerStyle={themed($textField)}
+        autoCapitalize="words"
+        autoComplete="additional-name"
+        autoCorrect={false}
+        keyboardType="default"
+        labelTx="registerScreen:lastNameFieldLabel"
+        placeholderTx="registerScreen:lastNameFieldPlaceholder"
+        helper={error}
+        status={error ? "error" : undefined}
+        onSubmitEditing={() => authPasswordInput.current?.focus()}
+      />
 
       <TextField
         value={authEmail}
@@ -90,8 +120,8 @@ export const LoginScreen: FC<LoginScreenProps> = observer(function LoginScreen(_
         autoComplete="email"
         autoCorrect={false}
         keyboardType="email-address"
-        labelTx="loginScreen:emailFieldLabel"
-        placeholderTx="loginScreen:emailFieldPlaceholder"
+        labelTx="registerScreen:emailFieldLabel"
+        placeholderTx="registerScreen:emailFieldPlaceholder"
         helper={error}
         status={error ? "error" : undefined}
         onSubmitEditing={() => authPasswordInput.current?.focus()}
@@ -101,39 +131,33 @@ export const LoginScreen: FC<LoginScreenProps> = observer(function LoginScreen(_
         ref={authPasswordInput}
         value={authPassword}
         onChangeText={setAuthPassword}
-        containerStyle={themed($textFieldPassword)}
+        containerStyle={themed($textField)}
         autoCapitalize="none"
         autoComplete="password"
         autoCorrect={false}
         secureTextEntry={isAuthPasswordHidden}
-        labelTx="loginScreen:passwordFieldLabel"
-        placeholderTx="loginScreen:passwordFieldPlaceholder"
+        labelTx="registerScreen:passwordFieldLabel"
+        placeholderTx="registerScreen:passwordFieldPlaceholder"
         onSubmitEditing={signInWithEmail}
         RightAccessory={PasswordRightAccessory}
       />
-      <Text
-        tx="loginScreen:forgotPassword"
-        preset="link"
-        style={themed($forgotPassword)}
-        onPress={() => {
-        }}
-      />
-
+      
+      
       <Button
         testID="login-button"
-        tx="loginScreen:tapToLogIn"
+        tx="registerScreen:tapToRegister"
         style={themed($tapButton)}
         preset="reversed"
         onPress={signInWithEmail}
       />
 
-      <Text
-        tx="loginScreen:callToRegister"
-        preset="link"
-        style={themed($callToRegister)}
-        onPress={() => { goRegister() }}
-      />
 
+      <Text
+        tx="registerScreen:callToLogin"
+        preset="link"
+        style={themed($callToLogin)}
+        onPress={() => { goLogin() }}
+      />
     </Screen>
   )
 })
@@ -143,19 +167,15 @@ const $screenContentContainer: ThemedStyle<ViewStyle> = ({ spacing }) => ({
   paddingHorizontal: spacing.lg,
 })
 
-const $callToRegister: ThemedStyle<TextStyle> = ({ spacing }) => ({
-  marginTop: spacing.md,
-  textAlign: "right"
-})
-const $forgotPassword: ThemedStyle<TextStyle> = ({ spacing }) => ({
-  marginBottom: spacing.md,
-  textAlign: "right"
-})
-
-
-const $logIn: ThemedStyle<TextStyle> = ({ spacing }) => ({
+const $register: ThemedStyle<TextStyle> = ({ spacing }) => ({
   marginBottom: spacing.sm,
 })
+
+const $callToLogin: ThemedStyle<TextStyle> = ({ spacing }) => ({
+  marginTop: spacing.md,
+  textAlign:"right"
+})
+
 
 const $enterDetails: ThemedStyle<TextStyle> = ({ spacing }) => ({
   marginBottom: spacing.lg,
@@ -168,10 +188,6 @@ const $hint: ThemedStyle<TextStyle> = ({ colors, spacing }) => ({
 
 const $textField: ThemedStyle<ViewStyle> = ({ spacing }) => ({
   marginBottom: spacing.lg,
-})
-
-const $textFieldPassword: ThemedStyle<ViewStyle> = ({ spacing }) => ({
-  marginBottom: spacing.xs,
 })
 
 const $tapButton: ThemedStyle<ViewStyle> = ({ spacing }) => ({

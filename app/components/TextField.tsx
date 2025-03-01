@@ -261,7 +261,7 @@ const $inputStyle: ThemedStyle<ViewStyle> = ({ colors, typography, spacing }) =>
   fontFamily: typography.primary.normal,
   color: colors.text,
   fontSize: 16,
-  height: 24,
+  height: 32,
   // https://github.com/facebook/react-native/issues/21720#issuecomment-532642093
   paddingVertical: 0,
   paddingHorizontal: 0,
@@ -278,6 +278,7 @@ const $rightAccessoryStyle: ThemedStyle<ViewStyle> = ({ spacing }) => ({
   height: 40,
   justifyContent: "center",
   alignItems: "center",
+  marginVertical:'auto'
 })
 
 const $leftAccessoryStyle: ThemedStyle<ViewStyle> = ({ spacing }) => ({

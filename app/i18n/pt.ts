@@ -38,8 +38,27 @@ const pt = {
     passwordFieldLabel: "Senha",
     emailFieldPlaceholder: "Digite seu endereço de e-mail",
     passwordFieldPlaceholder: "Senha super secreta aqui",
+    forgotPassword:"Esqueci a senha",
     tapToLogIn: "Toque para entrar!",
     hint: "Dica: você pode usar qualquer endereço de e-mail e sua senha favorita :)",
+    callToRegister:"Não tem conta? Criar conta"
+  },
+  registerScreen:{
+    register: "Criar conta",
+    enterDetails:
+      "Insira seus dados abaixo para criar sua conta e descobrir horários, motoristas disponíveis e tarifas especiais. Viajar nunca foi tão fácil!",
+    nameFieldLabel: "Nome",
+    lastNameFieldLabel: "Sobrenome",
+    emailFieldLabel: "E-mail",
+    passwordFieldLabel: "Senha",
+    nameFieldPlaceholder: "Digite seu nome",
+    lastNameFieldPlaceholder: "Digite seu sobrenome",
+    emailFieldPlaceholder: "Digite seu endereço de e-mail",
+    passwordFieldPlaceholder: "Senha super secreta aqui",
+    
+    tapToRegister: "Toque para criar!",
+    hint: "Dica: você pode usar qualquer endereço de e-mail e sua senha favorita :)",
+    callToLogin:"Já tem conta? Entrar"
   },
   Navigator: {
     accountTab: "Conta",

@@ -7,6 +7,7 @@ import React, {
 } from "react"
 import { Session, supabase } from "./supabase"
 import { AuthResponse, AuthTokenResponsePassword } from "@supabase/supabase-js"
+import * as Toast from 'burnt'
 
 
 type AuthState = {
@@ -21,7 +22,9 @@ type SignInProps = {
 
 type SignUpProps = {
   email: string
-  password: string
+  password: string,
+  firstName: string,
+  lastName: string,
 }
 
 type AuthContextType = {
@@ -56,25 +59,42 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
 
   const signIn = useCallback(
     async ({ email, password }: SignInProps) => {
+
       const result = await supabase.auth.signInWithPassword({
         email,
         password,
       })
 
-      if (result.data?.session?.access_token) {
-        setToken(result.data.session.access_token)
-      }
-      console.log('result signIn', result)
+      if (result.error) Toast.toast({
+        title: "Erro ao acessar!",
+        preset: "error",
+        message: result.error.message,
+        haptic: "error",
+        duration: 2,
+        shouldDismissByDrag: true,
+        from: "bottom",
+      })
+
+      if (result.data?.session?.access_token) setToken(result.data.session.access_token)
+
+
       return result
     },
     [supabase]
   )
 
   const signUp = useCallback(
-    async ({ email, password }: SignUpProps) => {
+    async ({ email, password, firstName, lastName }: SignUpProps) => {
       const result = await supabase.auth.signUp({
         email,
         password,
+        options: {
+          data: {
+            first_name: firstName,
+            last_name: lastName,
+            email_verified: true,
+          }
+        }
       })
 
       if (result.data?.session?.access_token) {

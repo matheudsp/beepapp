@@ -33,7 +33,7 @@ import {
 } from "@/components"
 import { isRTL, translate } from "@/i18n"
 import { useStores } from "../models"
-import { Episode } from "../models/Episode"
+import { Trip } from "../models/Trip"
 import { TabScreenProps } from "../navigators/Navigator"
 import type { ThemedStyle } from "@/theme"
 import { $styles } from "../theme"
@@ -50,34 +50,36 @@ const rnrImages = [rnrImage1, rnrImage2, rnrImage3]
 
 export const HomeScreen: FC<TabScreenProps<"Home">> = observer(
   function DriverListScreen(_props) {
-    const { episodeStore } = useStores()
+    const { tripStore } = useStores()
     const { themed } = useAppTheme()
 
     const [refreshing, setRefreshing] = useState(false)
     const [isLoading, setIsLoading] = useState(false)
+    
+    console.log(tripStore.fetchTrips())
 
     // initially, kick off a background refresh without the refreshing UI
     useEffect(() => {
-      ;(async function load() {
+      ; (async function load() {
         setIsLoading(true)
-        await episodeStore.fetchEpisodes()
+        await tripStore.fetchTrips()
         setIsLoading(false)
       })()
-    }, [episodeStore])
+    }, [tripStore])
 
     // simulate a longer refresh, if the refresh is too fast for UX
     async function manualRefresh() {
       setRefreshing(true)
-      await Promise.all([episodeStore.fetchEpisodes(), delay(750)])
+      await Promise.all([tripStore.fetchTrips(), delay(750)])
       setRefreshing(false)
     }
 
     return (
       <Screen preset="fixed" safeAreaEdges={["top"]} contentContainerStyle={$styles.flex1}>
-        <ListView<Episode>
+        <ListView<Trip>
           contentContainerStyle={themed([$styles.container, $listContentContainer])}
-          data={episodeStore.episodesForList.slice()}
-          extraData={episodeStore.favorites.length + episodeStore.episodes.length}
+          data={tripStore.tripsForList.slice()}
+          extraData={tripStore.favorites.length + tripStore.trips.length}
           refreshing={refreshing}
           estimatedItemSize={177}
           onRefresh={manualRefresh}
@@ -89,16 +91,16 @@ export const HomeScreen: FC<TabScreenProps<"Home">> = observer(
                 preset="generic"
                 style={themed($emptyState)}
                 headingTx={
-                  episodeStore.favoritesOnly
+                  tripStore.favoritesOnly
                     ? "HomeScreen:noFavoritesEmptyState.heading"
                     : undefined
                 }
                 contentTx={
-                  episodeStore.favoritesOnly
+                  tripStore.favoritesOnly
                     ? "HomeScreen:noFavoritesEmptyState.content"
                     : undefined
                 }
-                button={episodeStore.favoritesOnly ? "" : undefined}
+                button={tripStore.favoritesOnly ? "" : undefined}
                 buttonOnPress={manualRefresh}
                 imageStyle={$emptyStateImage}
                 ImageProps={{ resizeMode: "contain" }}
@@ -108,12 +110,12 @@ export const HomeScreen: FC<TabScreenProps<"Home">> = observer(
           ListHeaderComponent={
             <View style={themed($heading)}>
               <Text preset="heading" tx="HomeScreen:title" />
-              {(episodeStore.favoritesOnly || episodeStore.episodesForList.length > 0) && (
+              {(tripStore.favoritesOnly || tripStore.tripsForList.length > 0) && (
                 <View style={themed($toggle)}>
                   <Switch
-                    value={episodeStore.favoritesOnly}
+                    value={tripStore.favoritesOnly}
                     onValueChange={() =>
-                      episodeStore.setProp("favoritesOnly", !episodeStore.favoritesOnly)
+                      tripStore.setProp("favoritesOnly", !tripStore.favoritesOnly)
                     }
                     labelTx="HomeScreen:onlyFavorites"
                     labelPosition="left"
@@ -125,10 +127,10 @@ export const HomeScreen: FC<TabScreenProps<"Home">> = observer(
             </View>
           }
           renderItem={({ item }) => (
-            <EpisodeCard
-              episode={item}
-              isFavorite={episodeStore.hasFavorite(item)}
-              onPressFavorite={() => episodeStore.toggleFavorite(item)}
+            <TripCard
+              trip={item}
+              isFavorite={tripStore.hasFavorite(item)}
+              onPressFavorite={() => tripStore.toggleFavorite(item)}
             />
           )}
         />
@@ -137,12 +139,12 @@ export const HomeScreen: FC<TabScreenProps<"Home">> = observer(
   },
 )
 
-const EpisodeCard = observer(function EpisodeCard({
-  episode,
+const TripCard = observer(function TripCard({
+  trip,
   isFavorite,
   onPressFavorite,
 }: {
-  episode: Episode
+  trip: Trip
   onPressFavorite: () => void
   isFavorite: boolean
 }) {
@@ -193,13 +195,13 @@ const EpisodeCard = observer(function EpisodeCard({
     () =>
       Platform.select<AccessibilityProps>({
         ios: {
-          accessibilityLabel: episode.title,
+          accessibilityLabel: trip.destination,
           accessibilityHint: translate("HomeScreen:accessibility.cardHint", {
             action: isFavorite ? "unfavorite" : "favorite",
           }),
         },
         android: {
-          accessibilityLabel: episode.title,
+          accessibilityLabel: trip.destination,
           accessibilityActions: [
             {
               name: "longpress",
@@ -213,11 +215,11 @@ const EpisodeCard = observer(function EpisodeCard({
           },
         },
       }),
-    [episode.title, handlePressFavorite, isFavorite],
+    [trip.destination, handlePressFavorite, isFavorite],
   )
 
   const handlePressCard = () => {
-    openLinkInBrowser(episode.enclosure.link)
+    
   }
 
   const ButtonLeftAccessory: ComponentType<ButtonAccessoryProps> = useMemo(
@@ -265,20 +267,20 @@ const EpisodeCard = observer(function EpisodeCard({
           <Text
             style={themed($metadataText)}
             size="xxs"
-            accessibilityLabel={episode.datePublished.accessibilityLabel}
+            accessibilityLabel={trip.datePublished.accessibilityLabel}
           >
-            {episode.datePublished.textLabel}
+            {trip.datePublished.textLabel}
           </Text>
           <Text
             style={themed($metadataText)}
             size="xxs"
-            accessibilityLabel={episode.duration.accessibilityLabel}
+            accessibilityLabel={trip.driver.firstName}
           >
-            {episode.duration.textLabel}
+            {trip.driver.firstName}
           </Text>
         </View>
       }
-      content={`${episode.parsedTitleAndSubtitle.title} - ${episode.parsedTitleAndSubtitle.subtitle}`}
+      content={`${trip.departure} - ${trip.destination}`}
       {...accessibilityHintProps}
       RightComponent={<Image source={imageUri} style={themed($itemThumbnail)} />}
       FooterComponent={
@@ -295,7 +297,7 @@ const EpisodeCard = observer(function EpisodeCard({
         >
           <Text
             size="xxs"
-            accessibilityLabel={episode.duration.accessibilityLabel}
+            accessibilityLabel={`${trip.seats} vagas`}
             weight="medium"
             text={
               isFavorite
