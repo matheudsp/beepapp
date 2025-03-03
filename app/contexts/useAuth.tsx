@@ -5,14 +5,15 @@ import React, {
   useContext,
   useState,
 } from "react"
-import { Session, supabase } from "./supabase"
-import { AuthResponse, AuthTokenResponsePassword } from "@supabase/supabase-js"
+import { Session, supabase } from "../services/supabase/supabase"
+import { AuthResponse, AuthTokenResponsePassword, User } from "@supabase/supabase-js"
 import * as Toast from 'burnt'
 
 
 type AuthState = {
   isAuthenticated: boolean
   token?: Session["access_token"]
+  user?: User & { image?: string };
 }
 
 type SignInProps = {
@@ -36,6 +37,7 @@ type AuthContextType = {
 const AuthContext = createContext<AuthContextType>({
   isAuthenticated: false,
   token: undefined,
+  user: undefined,
   signIn: () => new Promise(() => ({})),
   signUp: () => new Promise(() => ({})),
   signOut: () => undefined,
@@ -55,7 +57,30 @@ export function useAuth() {
 
 export const AuthProvider = ({ children }: PropsWithChildren) => {
   const [token, setToken] = useState<AuthState["token"]>(undefined)
+  const [user, setUser] = useState<AuthState["user"]>(undefined);
 
+  const fetchProfile = async (userId: string) => {
+    const { data, error } = await supabase
+      .from("profiles")
+      .select("image")
+      .eq("user_id", userId)
+      .single();
+
+    if (error) {
+      Toast.toast({
+        title:"Erro ao buscar perfil",
+        preset:"error",
+        message: error.message,
+        haptic: 'error',
+        duration:2,
+        shouldDismissByDrag:true,
+        from:'bottom'
+      })
+      return null;
+    }
+
+    return data;
+  };
 
   const signIn = useCallback(
     async ({ email, password }: SignInProps) => {
@@ -64,19 +89,30 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
         email,
         password,
       })
+      
+      if (result.error) {
+        Toast.toast({
+          title: "Erro ao acessar!",
+          preset: "error",
+          message: result.error.message,
+          haptic: "error",
+          duration: 2,
+          shouldDismissByDrag: true,
+          from: "bottom",
+        })
+        return result
+      }
+      const session = result.data?.session;
+      if (session?.access_token) {
+        setToken(session.access_token)
 
-      if (result.error) Toast.toast({
-        title: "Erro ao acessar!",
-        preset: "error",
-        message: result.error.message,
-        haptic: "error",
-        duration: 2,
-        shouldDismissByDrag: true,
-        from: "bottom",
-      })
-
-      if (result.data?.session?.access_token) setToken(result.data.session.access_token)
-
+        const {data} = await supabase.auth.getUser();
+        if(data){
+          const profile = await fetchProfile(data.user?.id!)
+          setUser({...user!, image:profile?.image!})
+        }
+      }
+        
 
       return result
     },
@@ -109,12 +145,14 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
   const signOut = useCallback(async () => {
     await supabase.auth.signOut()
     setToken(undefined)
+    setUser(undefined)
   }, [supabase])
 
   return (
     <AuthContext.Provider
       value={{
         isAuthenticated: !!token,
+        user,
         token,
         signIn,
         signUp,

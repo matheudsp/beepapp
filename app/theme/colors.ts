@@ -9,6 +9,8 @@ const palette = {
   neutral800: "#191015",
   neutral900: "#000000",
 
+  primary:'#A54F31',
+  primaryopacity:'#a95d41f8',
   primary100: "#F4E0D9",
   primary200: "#E8C1B4",
   primary300: "#DDA28E",

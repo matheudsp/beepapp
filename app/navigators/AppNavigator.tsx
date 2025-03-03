@@ -15,7 +15,7 @@ import { navigationRef, useBackButtonHandler } from "./navigationUtilities"
 import { useAppTheme, useThemeProvider } from "@/utils/useAppTheme"
 import { ComponentProps } from "react"
 import React from "react"
-import { useAuth } from "app/services/auth/useAuth"
+import { useAuth } from "@/contexts/useAuth"
 /**
  * This type allows TypeScript to know what routes are defined in this navigator
  * as well as what properties (if any) they might take when navigating to them.

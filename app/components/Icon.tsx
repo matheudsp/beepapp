@@ -1,80 +1,44 @@
 import { ComponentType } from "react"
-import {
-  Image,
-  ImageStyle,
-  StyleProp,
-  TouchableOpacity,
-  TouchableOpacityProps,
-  View,
-  ViewProps,
-  ViewStyle,
-} from "react-native"
+import { TouchableOpacity, TouchableOpacityProps, View, ViewProps, ViewStyle, type StyleProp } from "react-native"
 import { useAppTheme } from "@/utils/useAppTheme"
-
+import { IconType } from "react-icons" 
+import { 
+  FaBell, FaCheck, FaHeart, FaLock, FaBars, FaTimes, 
+  FaArrowLeft, FaArrowRight, FaEye, FaRegEye, FaRegEyeSlash 
+} from "react-icons/fa"
+import { IoCalendarNumberOutline, IoPersonOutline } from "react-icons/io5"
+import { GoHome } from "react-icons/go";
+import { GiFullMotorcycleHelmet } from "react-icons/gi";
 export type IconTypes = keyof typeof iconRegistry
 
 interface IconProps extends TouchableOpacityProps {
-  /**
-   * The name of the icon
-   */
   icon: IconTypes
-
-  /**
-   * An optional tint color for the icon
-   */
   color?: string
-
-  /**
-   * An optional size for the icon. If not provided, the icon will be sized to the icon's resolution.
-   */
   size?: number
-
-  /**
-   * Style overrides for the icon image
-   */
-  style?: StyleProp<ImageStyle>
-
-  /**
-   * Style overrides for the icon container
-   */
   containerStyle?: StyleProp<ViewStyle>
-
-  /**
-   * An optional function to be called when the icon is pressed
-   */
   onPress?: TouchableOpacityProps["onPress"]
 }
 
-/**
- * A component to render a registered icon.
- * It is wrapped in a <TouchableOpacity /> if `onPress` is provided, otherwise a <View />.
- * @see [Documentation and Examples]{@link https://docs.infinite.red/ignite-cli/boilerplate/app/components/Icon/}
- * @param {IconProps} props - The props for the `Icon` component.
- * @returns {JSX.Element} The rendered `Icon` component.
- */
 export function Icon(props: IconProps) {
   const {
     icon,
     color,
-    size,
-    style: $imageStyleOverride,
+    size = 24,
     containerStyle: $containerStyleOverride,
     ...WrapperProps
   } = props
 
   const isPressable = !!WrapperProps.onPress
-  const Wrapper = (WrapperProps?.onPress ? TouchableOpacity : View) as ComponentType<
-    TouchableOpacityProps | ViewProps
-  >
+  const Wrapper = (isPressable ? TouchableOpacity : View) as ComponentType<TouchableOpacityProps | ViewProps>
 
   const { theme } = useAppTheme()
+  const IconComponent = iconRegistry[icon] as IconType | undefined
 
-  const $imageStyle: StyleProp<ImageStyle> = [
-    $imageStyleBase,
-    { tintColor: color ?? theme.colors.text },
-    size !== undefined && { width: size, height: size },
-    $imageStyleOverride,
-  ]
+  // ⚠️ Se o ícone não for encontrado, evita erro de renderização
+  if (!IconComponent) {
+    console.error(`Icon "${icon}" not found in iconRegistry`)
+    return null
+  }
 
   return (
     <Wrapper
@@ -82,37 +46,25 @@ export function Icon(props: IconProps) {
       {...WrapperProps}
       style={$containerStyleOverride}
     >
-      <Image style={$imageStyle} source={iconRegistry[icon]} />
+      <IconComponent size={size} color={color ?? theme.colors.text} />
     </Wrapper>
   )
 }
 
 export const iconRegistry = {
-  back: require("../../assets/icons/back.png"),
-  bell: require("../../assets/icons/bell.png"),
-  caretLeft: require("../../assets/icons/caretLeft.png"),
-  caretRight: require("../../assets/icons/caretRight.png"),
-  check: require("../../assets/icons/check.png"),
-  clap: require("../../assets/icons/demo/clap.png"),
-  community: require("../../assets/icons/demo/community.png"),
-  components: require("../../assets/icons/demo/components.png"),
-  debug: require("../../assets/icons/demo/debug.png"),
-  github: require("../../assets/icons/demo/github.png"),
-  heart: require("../../assets/icons/demo/heart.png"),
-  hidden: require("../../assets/icons/hidden.png"),
-  ladybug: require("../../assets/icons/ladybug.png"),
-  lock: require("../../assets/icons/lock.png"),
-  menu: require("../../assets/icons/menu.png"),
-  more: require("../../assets/icons/more.png"),
-  pin: require("../../assets/icons/demo/pin.png"),
-  podcast: require("../../assets/icons/demo/podcast.png"),
-  settings: require("../../assets/icons/settings.png"),
-  slack: require("../../assets/icons/demo/slack.png"),
-  view: require("../../assets/icons/view.png"),
-  x: require("../../assets/icons/x.png"),
-  
-}
-
-const $imageStyleBase: ImageStyle = {
-  resizeMode: "contain",
+  back: FaArrowLeft,
+  bell: FaBell,
+  caretLeft: FaArrowLeft,
+  caretRight: FaArrowRight,
+  check: FaCheck,
+  heart: FaHeart,
+  lock: FaLock,
+  menu: FaBars,
+  x: FaTimes,
+  view: FaRegEye,
+  hidden: FaRegEyeSlash,
+  calendar: IoCalendarNumberOutline,
+  home: GoHome,
+  account: IoPersonOutline,
+  driver:GiFullMotorcycleHelmet
 }

@@ -37,7 +37,6 @@
     "plugins": [
       "expo-localization",
       "expo-font",
-      "@prisma/react-native",
       [
         "expo-build-properties",
         {

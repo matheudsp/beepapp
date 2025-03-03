@@ -6,7 +6,7 @@ import { useStores } from "../models"
 import { AppStackScreenProps } from "../navigators"
 import type { ThemedStyle } from "@/theme"
 import { useAppTheme } from "@/utils/useAppTheme"
-import { useAuth } from "@/services/auth/useAuth"
+import { useAuth } from "@/contexts/useAuth"
 import * as Toast from 'burnt'
 
 interface LoginScreenProps extends AppStackScreenProps<"Login"> { }

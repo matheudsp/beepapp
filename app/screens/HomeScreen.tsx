@@ -1,5 +1,5 @@
 import { observer } from "mobx-react-lite"
-import { ComponentType, FC, useCallback, useEffect, useMemo, useState } from "react"
+import { ComponentType, FC, useCallback, useEffect, useMemo, useRef, useState } from "react"
 import {
   AccessibilityProps,
   ActivityIndicator,
@@ -11,6 +11,7 @@ import {
   TextStyle,
   View,
   ViewStyle,
+  type TextInput,
 } from "react-native"
 import { type ContentStyle } from "@shopify/flash-list"
 import Animated, {
@@ -30,39 +31,43 @@ import {
   Screen,
   Switch,
   Text,
+  TextField,
+  type TextFieldAccessoryProps,
 } from "@/components"
 import { isRTL, translate } from "@/i18n"
 import { useStores } from "../models"
 import { Trip } from "../models/Trip"
 import { TabScreenProps } from "../navigators/Navigator"
 import type { ThemedStyle } from "@/theme"
-import { $styles } from "../theme"
+import { $styles, colors } from "../theme"
 import { delay } from "../utils/delay"
-import { openLinkInBrowser } from "../utils/openLinkInBrowser"
 import { useAppTheme } from "@/utils/useAppTheme"
+import Greeting from "@/components/Gretting"
+import { useAuth } from "@/contexts/useAuth"
+import { format } from "date-fns"
+import { ptBR } from "date-fns/locale/pt-BR"
 
 const ICON_SIZE = 14
-
-const rnrImage1 = require("../../assets/images/demo/rnr-image-1.png")
-const rnrImage2 = require("../../assets/images/demo/rnr-image-2.png")
-const rnrImage3 = require("../../assets/images/demo/rnr-image-3.png")
-const rnrImages = [rnrImage1, rnrImage2, rnrImage3]
 
 export const HomeScreen: FC<TabScreenProps<"Home">> = observer(
   function DriverListScreen(_props) {
     const { tripStore } = useStores()
-    const { themed } = useAppTheme()
-
+    const { themed, theme: { colors } } = useAppTheme()
+    const { user } = useAuth()
     const [refreshing, setRefreshing] = useState(false)
     const [isLoading, setIsLoading] = useState(false)
-    
-    console.log(tripStore.fetchTrips())
+    const [actualLocation, setActualLocation] = useState("")
+    const [destinationLocation, setDestinationLocation] = useState("")
+
+    const actualLocationInput = useRef<TextInput>(null)
+    const destinationLocationInput = useRef<TextInput>(null)
 
     // initially, kick off a background refresh without the refreshing UI
     useEffect(() => {
       ; (async function load() {
         setIsLoading(true)
         await tripStore.fetchTrips()
+
         setIsLoading(false)
       })()
     }, [tripStore])
@@ -74,10 +79,29 @@ export const HomeScreen: FC<TabScreenProps<"Home">> = observer(
       setRefreshing(false)
     }
 
+
+
+    const ButtonDateLeftAccessory: ComponentType<ButtonAccessoryProps> = useMemo(
+      () =>
+        function ButtonDateLeftAccessory(props: ButtonAccessoryProps) {
+          return (
+            <Icon
+              icon="calendar"
+              color={colors.text}
+              containerStyle={props.style}
+              size={20}
+              onPress={() => { }}
+            />
+          )
+        },
+      [colors.text],
+    )
+
+
     return (
       <Screen preset="fixed" safeAreaEdges={["top"]} contentContainerStyle={$styles.flex1}>
+
         <ListView<Trip>
-          contentContainerStyle={themed([$styles.container, $listContentContainer])}
           data={tripStore.tripsForList.slice()}
           extraData={tripStore.favorites.length + tripStore.trips.length}
           refreshing={refreshing}
@@ -108,30 +132,125 @@ export const HomeScreen: FC<TabScreenProps<"Home">> = observer(
             )
           }
           ListHeaderComponent={
-            <View style={themed($heading)}>
-              <Text preset="heading" tx="HomeScreen:title" />
-              {(tripStore.favoritesOnly || tripStore.tripsForList.length > 0) && (
-                <View style={themed($toggle)}>
-                  <Switch
-                    value={tripStore.favoritesOnly}
-                    onValueChange={() =>
-                      tripStore.setProp("favoritesOnly", !tripStore.favoritesOnly)
-                    }
-                    labelTx="HomeScreen:onlyFavorites"
-                    labelPosition="left"
-                    labelStyle={$labelStyle}
-                    accessibilityLabel={translate("HomeScreen:accessibility.switch")}
+            <>
+              <View style={themed($heading)}>
+                <View style={[$styles.row, { display: 'flex', justifyContent: 'space-between', alignItems: "center" }]}>
+                  <Text preset="heading" style={themed($greeting)} tx={Greeting()} />
+
+                  <Image source={user?.image ? { uri: user.image } : require("../../assets/images/no-profile.png")} style={themed($itemProfileImage)} />
+
+
+                </View>
+
+                <View style={themed($search)}>
+
+                  <TextField
+                    value={actualLocation}
+                    onChangeText={setActualLocation}
+                    style={themed($textInput)}
+                    containerStyle={themed($textField)}
+                    inputWrapperStyle={themed(textInputWrapper)}
+                    autoCapitalize="none"
+                    autoComplete="postal-address"
+                    autoCorrect={false}
+                    keyboardType="default"
+                    labelTx="HomeScreen:actualLocationFieldLabel"
+                    placeholderTx="HomeScreen:actualLocationFieldPlaceholder"
+
+
+                    onSubmitEditing={() => actualLocationInput.current?.focus()}
+                  />
+                  <TextField
+                    value={destinationLocation}
+                    onChangeText={setDestinationLocation}
+                    style={themed($textInput)}
+                    containerStyle={themed($textField)}
+                    inputWrapperStyle={themed(textInputWrapper)}
+                    autoCapitalize="none"
+                    autoComplete="postal-address"
+                    autoCorrect={false}
+                    keyboardType="default"
+                    labelTx="HomeScreen:destinationLocationFieldLabel"
+                    placeholderTx="HomeScreen:destinationLocationFieldPlaceholder"
+
+
+                    onSubmitEditing={() => destinationLocationInput.current?.focus()}
                   />
                 </View>
-              )}
-            </View>
+
+              </View>
+              <View style={themed($dateSelector)}>
+                <Text weight="bold" size="md" tx="HomeScreen:availableDates" />
+                <View style={[$styles.row, { gap: 10 }]}>
+                  <Button
+                    onPress={() => { }}
+                    onLongPress={() => { }}
+                    style={themed([$dateButton])}
+                    accessibilityLabel={
+                      "HomeScreen:accessibility.todayDateButton"
+                    }
+
+                  >
+                    <Text
+                      size="xs"
+                      accessibilityLabel={"HomeScreen:accessibility.todayDateButton"}
+                      weight="bold"
+                      tx={
+                        "HomeScreen:todayDateButton"
+                      }
+                    />
+                  </Button>
+
+                  <Button
+                    onPress={() => { }}
+                    onLongPress={() => { }}
+                    style={themed([$dateButton])}
+                    accessibilityLabel={
+                      "HomeScreen:accessibility.tomorrowDateButton"
+                    }
+
+                  >
+                    <Text
+                      size="xs"
+                      accessibilityLabel={"HomeScreen:accessibility.tomorrowDateButton"}
+                      weight="bold"
+                      tx={
+                        "HomeScreen:tomorrowDateButton"
+                      }
+                    />
+                  </Button>
+                  <Button
+                    onPress={() => { }}
+                    onLongPress={() => { }}
+                    style={[themed([$dateButton]), { gap: 5 }]}
+                    accessibilityLabel={
+                      "HomeScreen:accessibility.otherDateButton"
+                    }
+                    LeftAccessory={ButtonDateLeftAccessory}
+                  >
+                    <Text
+                      size="xs"
+                      accessibilityLabel={"HomeScreen:accessibility.otherDateButton"}
+                      weight="bold"
+                      tx={
+                        "HomeScreen:otherDateButton"
+                      }
+                    />
+                  </Button>
+                </View>
+              </View>
+            </>
           }
           renderItem={({ item }) => (
-            <TripCard
-              trip={item}
-              isFavorite={tripStore.hasFavorite(item)}
-              onPressFavorite={() => tripStore.toggleFavorite(item)}
-            />
+            <>
+
+              <TripCard
+                trip={item}
+                isFavorite={tripStore.hasFavorite(item)}
+                onPressFavorite={() => tripStore.toggleFavorite(item)}
+              />
+            </>
+
           )}
         />
       </Screen>
@@ -141,8 +260,6 @@ export const HomeScreen: FC<TabScreenProps<"Home">> = observer(
 
 const TripCard = observer(function TripCard({
   trip,
-  isFavorite,
-  onPressFavorite,
 }: {
   trip: Trip
   onPressFavorite: () => void
@@ -153,40 +270,11 @@ const TripCard = observer(function TripCard({
     themed,
   } = useAppTheme()
 
-  const liked = useSharedValue(isFavorite ? 1 : 0)
-  const imageUri = useMemo<ImageSourcePropType>(() => {
-    return rnrImages[Math.floor(Math.random() * rnrImages.length)]
-  }, [])
 
-  // Grey heart
-  const animatedLikeButtonStyles = useAnimatedStyle(() => {
-    return {
-      transform: [
-        {
-          scale: interpolate(liked.value, [0, 1], [1, 0], Extrapolation.EXTEND),
-        },
-      ],
-      opacity: interpolate(liked.value, [0, 1], [1, 0], Extrapolation.CLAMP),
-    }
-  })
-
-  // Pink heart
-  const animatedUnlikeButtonStyles = useAnimatedStyle(() => {
-    return {
-      transform: [
-        {
-          scale: liked.value,
-        },
-      ],
-      opacity: liked.value,
-    }
-  })
-
-  const handlePressFavorite = useCallback(() => {
-    onPressFavorite()
-    liked.value = withSpring(liked.value ? 0 : 1)
-  }, [liked, onPressFavorite])
-
+  const imageUri = useMemo<ImageSourcePropType>(
+    () => trip.driver.profile_image ? { uri: trip.driver.profile_image } : require("../../assets/images/no-profile.png"),
+    [trip.driver.profile_image]
+  )
   /**
    * Android has a "longpress" accessibility action. iOS does not, so we just have to use a hint.
    * @see https://reactnative.dev/docs/accessibility#accessibilityactions
@@ -195,147 +283,146 @@ const TripCard = observer(function TripCard({
     () =>
       Platform.select<AccessibilityProps>({
         ios: {
-          accessibilityLabel: trip.destination,
-          accessibilityHint: translate("HomeScreen:accessibility.cardHint", {
-            action: isFavorite ? "unfavorite" : "favorite",
-          }),
+          accessibilityLabel: translate("HomeScreen:accessibility.cardHint"),
+          accessibilityHint: translate("HomeScreen:accessibility.cardHint"),
         },
         android: {
-          accessibilityLabel: trip.destination,
+          accessibilityLabel: translate("HomeScreen:accessibility.cardHint"),
           accessibilityActions: [
             {
               name: "longpress",
-              label: translate("HomeScreen:accessibility.favoriteAction"),
+              label: translate("HomeScreen:accessibility.cardHint"),
             },
           ],
           onAccessibilityAction: ({ nativeEvent }) => {
             if (nativeEvent.actionName === "longpress") {
-              handlePressFavorite()
+              //  open the trip screen
             }
           },
         },
       }),
-    [trip.destination, handlePressFavorite, isFavorite],
+    [],
   )
 
   const handlePressCard = () => {
-    
-  }
 
-  const ButtonLeftAccessory: ComponentType<ButtonAccessoryProps> = useMemo(
-    () =>
-      function ButtonLeftAccessory() {
-        return (
-          <View>
-            <Animated.View
-              style={[
-                $styles.row,
-                themed($iconContainer),
-                StyleSheet.absoluteFill,
-                animatedLikeButtonStyles,
-              ]}
-            >
-              <Icon
-                icon="heart"
-                size={ICON_SIZE}
-                color={colors.palette.neutral800} // dark grey
-              />
-            </Animated.View>
-            <Animated.View
-              style={[$styles.row, themed($iconContainer), animatedUnlikeButtonStyles]}
-            >
-              <Icon
-                icon="heart"
-                size={ICON_SIZE}
-                color={colors.palette.primary400} // pink
-              />
-            </Animated.View>
-          </View>
-        )
-      },
-    [animatedLikeButtonStyles, animatedUnlikeButtonStyles, colors, themed],
-  )
+  }
 
   return (
     <Card
       style={themed($item)}
       verticalAlignment="force-footer-bottom"
       onPress={handlePressCard}
-      onLongPress={handlePressFavorite}
+      onLongPress={handlePressCard}
       HeadingComponent={
         <View style={[$styles.row, themed($metadata)]}>
           <Text
             style={themed($metadataText)}
-            size="xxs"
-            accessibilityLabel={trip.datePublished.accessibilityLabel}
+            size="lg"
+            accessibilityLabel={trip.origin + ' → ' + trip.destination}
           >
-            {trip.datePublished.textLabel}
+            {trip.origin} → {trip.destination}
+          </Text>
+
+        </View>
+      }
+      // contentStyle={}
+      ContentComponent={<View style={[$styles.row,{gap:5, alignItems:'center'}]}>
+        <Icon
+          icon="driver"
+          color={colors.text}
+
+          size={20}
+          onPress={() => { }}
+        />
+        <Text>
+          {trip.driver.first_name} {trip.driver.last_name}
+        </Text>
+      </View>
+      }
+
+      {...accessibilityHintProps}
+      RightComponent={<Image source={imageUri} style={themed($imageDriver)} />}
+      FooterComponent={
+        <View style={[$styles.row, themed($metadata)]}>
+
+          <Text
+            style={themed($metadataText)}
+            size="xs"
+
+          >
+            Saída: {format(new Date(trip.departure), "dd/MM/yyyy HH:mm", { locale: ptBR }) + 'h'}
           </Text>
           <Text
             style={themed($metadataText)}
-            size="xxs"
-            accessibilityLabel={trip.driver.firstName}
+            accessibilityLabel={trip.seats.toString()}
+            size="xs"
+
           >
-            {trip.driver.firstName}
+            Vagas disponíveis: {trip.seats}
           </Text>
+
         </View>
-      }
-      content={`${trip.departure} - ${trip.destination}`}
-      {...accessibilityHintProps}
-      RightComponent={<Image source={imageUri} style={themed($itemThumbnail)} />}
-      FooterComponent={
-        <Button
-          onPress={handlePressFavorite}
-          onLongPress={handlePressFavorite}
-          style={themed([$favoriteButton, isFavorite && $unFavoriteButton])}
-          accessibilityLabel={
-            isFavorite
-              ? translate("HomeScreen:accessibility.unfavoriteIcon")
-              : translate("HomeScreen:accessibility.favoriteIcon")
-          }
-          LeftAccessory={ButtonLeftAccessory}
-        >
-          <Text
-            size="xxs"
-            accessibilityLabel={`${trip.seats} vagas`}
-            weight="medium"
-            text={
-              isFavorite
-                ? translate("HomeScreen:unfavoriteButton")
-                : translate("HomeScreen:favoriteButton")
-            }
-          />
-        </Button>
       }
     />
   )
 })
 
 // #region Styles
-const $listContentContainer: ThemedStyle<ContentStyle> = ({ spacing }) => ({
-  paddingHorizontal: spacing.lg,
-  paddingTop: spacing.lg + spacing.xl,
-  paddingBottom: spacing.lg,
+
+
+const $greeting: ThemedStyle<TextStyle> = ({ colors }) => ({
+  color: colors.text,
+
 })
 
-const $heading: ThemedStyle<ViewStyle> = ({ spacing }) => ({
-  marginBottom: spacing.md,
+const $textInput: ThemedStyle<ViewStyle> = ({ spacing }) => ({
+  height: spacing.xxl,
+
+})
+
+const textInputWrapper: ThemedStyle<ViewStyle> = ({ colors }) => ({
+  borderWidth: 0,
+  backgroundColor: colors.palette.primaryopacity
+})
+
+const $heading: ThemedStyle<ViewStyle> = ({ spacing, colors }) => ({
+  marginBottom: spacing.lg,
+  backgroundColor: colors.palette.primary,
+  paddingHorizontal: spacing.xl,
+  paddingVertical: spacing.xl
+})
+
+const $dateSelector: ThemedStyle<ViewStyle> = ({ spacing }) => ({
+  paddingHorizontal: spacing.xl,
+
+})
+const $textField: ThemedStyle<ViewStyle> = ({ spacing, colors }) => ({
+  marginBottom: spacing.xxxs,
+  width: '95%',
+
+
+})
+const $itemProfileImage: ThemedStyle<ImageStyle> = ({ }) => ({
+  width: 44,
+  height: 44
 })
 
 const $item: ThemedStyle<ViewStyle> = ({ colors, spacing }) => ({
   padding: spacing.md,
-  marginTop: spacing.md,
+  margin: spacing.xl,
   minHeight: 120,
   backgroundColor: colors.palette.neutral100,
 })
 
-const $itemThumbnail: ThemedStyle<ImageStyle> = ({ spacing }) => ({
-  marginTop: spacing.sm,
+const $imageDriver: ThemedStyle<ImageStyle> = ({ spacing }) => ({
   borderRadius: 50,
-  alignSelf: "flex-start",
+  alignSelf: "center",
+  width: 64,
+  height: 64
 })
 
-const $toggle: ThemedStyle<ViewStyle> = ({ spacing }) => ({
+const $search: ThemedStyle<ViewStyle> = ({ spacing }) => ({
   marginTop: spacing.md,
 })
 
@@ -351,32 +438,31 @@ const $iconContainer: ThemedStyle<ViewStyle> = ({ spacing }) => ({
 
 const $metadata: ThemedStyle<TextStyle> = ({ colors, spacing }) => ({
   color: colors.textDim,
-  marginTop: spacing.xs,
+  
 })
 
 const $metadataText: ThemedStyle<TextStyle> = ({ colors, spacing }) => ({
   color: colors.textDim,
   marginEnd: spacing.md,
-  marginBottom: spacing.xs,
+  
 })
 
-const $favoriteButton: ThemedStyle<ViewStyle> = ({ colors, spacing }) => ({
+
+
+const $dateButton: ThemedStyle<ViewStyle> = ({ colors, spacing }) => ({
   borderRadius: 17,
   marginTop: spacing.md,
-  justifyContent: "flex-start",
-  backgroundColor: colors.palette.neutral300,
+  justifyContent: "space-between",
+  alignItems: 'center',
   borderColor: colors.palette.neutral300,
-  paddingHorizontal: spacing.md,
+  paddingHorizontal: spacing.lg,
   paddingTop: spacing.xxxs,
   paddingBottom: 0,
   minHeight: 32,
   alignSelf: "flex-start",
 })
 
-const $unFavoriteButton: ThemedStyle<ViewStyle> = ({ colors }) => ({
-  borderColor: colors.palette.primary100,
-  backgroundColor: colors.palette.primary100,
-})
+
 
 const $emptyState: ThemedStyle<ViewStyle> = ({ spacing }) => ({
   marginTop: spacing.xxl,

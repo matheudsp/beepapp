@@ -32,7 +32,7 @@ import { customFontsToLoad } from "./theme"
 import Config from "./config"
 import { KeyboardProvider } from "react-native-keyboard-controller"
 import { loadDateFnsLocale } from "./utils/formatDate"
-import { AuthProvider } from "./services/auth/useAuth"
+import { AuthProvider } from "./contexts/useAuth"
 import { Toaster } from "burnt/web";
 export const NAVIGATION_PERSISTENCE_KEY = "NAVIGATION_STATE"
 

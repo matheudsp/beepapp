@@ -9,7 +9,7 @@
 
 
 import type { TripSnapshotIn } from "../../models/Trip"
-import { tripService } from "../prisma/queries/trips"
+import { tripService } from "../supabase/queries/trips"
 
 export class Api {
   async getTrips(): Promise<{ trips: TripSnapshotIn[] } | { error: string }> {
@@ -18,13 +18,13 @@ export class Api {
 
       const formattedTrips: TripSnapshotIn[] = trips.map((trip) => ({
         id: trip.id,
-        departure: trip.departure.toISOString(),
+        departure: trip.departure.toString(),
         origin: trip.origin,
         destination: trip.destination,
         seats: trip.seats,
         driver: {
-          firstName: trip.driver.firstName,
-          profileImage: trip.driver.profileImage ?? null,
+          firstName: trip.driver.first_name,
+          profileImage: trip.driver.profile_image ?? null,
         },
       }));
 

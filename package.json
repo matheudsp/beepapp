@@ -26,10 +26,7 @@
     "bundle:web": "npx expo export --platform web",
     "serve:web": "npx serve dist",
     "prebuild:clean": "npx expo prebuild --clean",
-    "migrate-dev": "npx prisma migrate dev && npx tsx prisma/seed/seed.triggers.ts"
-  },
-  "prisma": {
-    "seed": "ts-node prisma/seed/seed.populate.ts"
+    "seed": "npx tsx database/seed/seed.triggers.ts && npx tsx database/seed/seed.populate.ts"
   },
   "dependencies": {
     "@expo-google-fonts/space-grotesk": "^0.2.2",
@@ -65,6 +62,7 @@
     "react": "18.3.1",
     "react-dom": "18.3.1",
     "react-i18next": "^15.0.1",
+    "react-icons": "^5.5.0",
     "react-native": "0.76.7",
     "react-native-document-picker": "^9.3.1",
     "react-native-drawer-layout": "^4.0.1",

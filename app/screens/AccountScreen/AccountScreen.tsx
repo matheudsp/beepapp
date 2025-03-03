@@ -17,9 +17,9 @@ import { isRTL } from "@/i18n"
 import { useStores } from "../../models"
 import { useAppTheme } from "@/utils/useAppTheme"
 import React from "react"
-import { supabase } from "@/services/auth/supabase"
+import { supabase } from "@/services/supabase/supabase"
 import { Session } from '@supabase/supabase-js'
-import { useAuth } from "@/services/auth/useAuth"
+import { useAuth } from "@/contexts/useAuth"
 function openLinkInBrowser(url: string) {
   Linking.canOpenURL(url).then((canOpen) => canOpen && Linking.openURL(url))
 }
@@ -46,6 +46,7 @@ export const AccountScreen: FC<TabScreenProps<"Account">> = function AccountScre
       setSession(session)
     })
   }, [])
+  
   useEffect(() => {
     if (session) getProfile()
   }, [session])

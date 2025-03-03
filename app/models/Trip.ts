@@ -23,8 +23,9 @@ export const TripModel = types
     destination: types.string,
     seats: types.number,
     driver: types.model({
-      firstName: types.string,
-      profileImage: types.maybeNull(types.string), // Pode ser null
+      first_name: types.string,
+      last_name:types.string,
+      profile_image: types.maybeNull(types.string), // Pode ser null
     }),
   })
   .actions(withSetPropAction)

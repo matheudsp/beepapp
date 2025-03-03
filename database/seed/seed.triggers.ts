@@ -35,10 +35,9 @@ $$;
 
    `;
 
-  await sql`ALTER TABLE profiles ENABLE ROW LEVEL SECURITY;`;
-  await sql`ALTER TABLE trips ENABLE ROW LEVEL SECURITY;`;
-  await sql`ALTER TABLE bookings ENABLE ROW LEVEL SECURITY;`;
-  await sql`ALTER TABLE _prisma_migrations ENABLE ROW LEVEL SECURITY;`;
+  // await sql`ALTER TABLE profiles ENABLE ROW LEVEL SECURITY;`;
+  // await sql`ALTER TABLE trips ENABLE ROW LEVEL SECURITY;`;
+  // await sql`ALTER TABLE bookings ENABLE ROW LEVEL SECURITY;`;
 
   console.log("Functions and triggers created successfully!");
   process.exit();

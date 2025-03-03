@@ -9,7 +9,7 @@ import { $styles, type ThemedStyle } from "@/theme"
 import { useHeader } from "../utils/useHeader"
 import { useSafeAreaInsetsStyle } from "../utils/useSafeAreaInsetsStyle"
 import { useAppTheme } from "@/utils/useAppTheme"
-import { useAuth } from "@/services/auth/useAuth"
+import { useAuth } from "@/contexts/useAuth"
 
 const welcomeLogo = require("../../assets/images/logo.png")
 const welcomeFace = require("../../assets/images/welcome-face.png")

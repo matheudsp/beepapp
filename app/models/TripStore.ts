@@ -1,5 +1,5 @@
 import { Instance, SnapshotOut, types } from "mobx-state-tree";
-import { tripService } from "@/services/prisma/queries/trips";
+import { tripService } from "@/services/supabase/queries/trips";
 import { Trip, TripModel } from "./Trip";
 import { withSetPropAction } from "./helpers/withSetPropAction";
 
@@ -18,12 +18,9 @@ export const TripStoreModel = types
     async fetchTrips() {
       try {
         const trips = await tripService.findAll();
-        const formattedTrips = trips.map((trip) => ({
-          ...trip,
-          departure: trip.departure.toISOString(), // Convertendo Date para string
-        }));
 
-        store.setProp("trips", formattedTrips);
+        store.setProp("trips", trips);
+        console.log(trips)
       } catch (error) {
         console.error("Erro ao buscar viagens:", error);
       }

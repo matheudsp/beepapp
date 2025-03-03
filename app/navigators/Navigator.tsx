@@ -63,7 +63,7 @@ export function Navigator() {
           tabBarAccessibilityLabel: translate("Navigator:HomeTab"),
           tabBarLabel: translate("Navigator:HomeTab"),
           tabBarIcon: ({ focused }) => (
-            <Icon icon="view" color={focused ? colors.tint : colors.tintInactive} size={30} />
+            <Icon icon="home" color={focused ? colors.tint : colors.tintInactive} size={30} />
           ),
         }}
       />
@@ -74,7 +74,7 @@ export function Navigator() {
         options={{
           tabBarLabel: translate("Navigator:accountTab"),
           tabBarIcon: ({ focused }) => (
-            <Icon icon="community" color={focused ? colors.tint : colors.tintInactive} size={30} />
+            <Icon icon="account" color={focused ? colors.tint : colors.tintInactive} size={30} />
           ),
         }}
       />

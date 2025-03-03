@@ -38,12 +38,12 @@ const pt = {
     passwordFieldLabel: "Senha",
     emailFieldPlaceholder: "Digite seu endereço de e-mail",
     passwordFieldPlaceholder: "Senha super secreta aqui",
-    forgotPassword:"Esqueci a senha",
+    forgotPassword: "Esqueci a senha",
     tapToLogIn: "Toque para entrar!",
     hint: "Dica: você pode usar qualquer endereço de e-mail e sua senha favorita :)",
-    callToRegister:"Não tem conta? Criar conta"
+    callToRegister: "Não tem conta? Criar conta"
   },
-  registerScreen:{
+  registerScreen: {
     register: "Criar conta",
     enterDetails:
       "Insira seus dados abaixo para criar sua conta e descobrir horários, motoristas disponíveis e tarifas especiais. Viajar nunca foi tão fácil!",
@@ -55,10 +55,10 @@ const pt = {
     lastNameFieldPlaceholder: "Digite seu sobrenome",
     emailFieldPlaceholder: "Digite seu endereço de e-mail",
     passwordFieldPlaceholder: "Senha super secreta aqui",
-    
+
     tapToRegister: "Toque para criar!",
     hint: "Dica: você pode usar qualquer endereço de e-mail e sua senha favorita :)",
-    callToLogin:"Já tem conta? Entrar"
+    callToLogin: "Já tem conta? Entrar"
   },
   Navigator: {
     accountTab: "Conta",
@@ -86,11 +86,25 @@ const pt = {
       "Se isso não funcionar, certifique-se de que o aplicativo Reactotron está em execução e recarregue o app.",
   },
   HomeScreen: {
-    title: "Carros disponíveis na sua região",
+    goodMorning: "Bom dia",
+    goodAfternoon: "Boa tarde",
+    goodEvening: "Boa noite",
+    destinationLocationFieldLabel: "Destino",
+    destinationLocationFieldPlaceholder: "Para onde você quer ir?",
+    actualLocationFieldLabel: "Ponto de partida",
+    actualLocationFieldPlaceholder: "Onde você está?",
     onlyFavorites: "Mostrar apenas favoritos",
+    availableDates: "Datas disponíveis",
+    todayDateButton: "Hoje",
+    tomorrowDateButton: "Amanhã",
+    otherDateButton: "Outra",
     favoriteButton: "Favoritar",
     unfavoriteButton: "Desfavoritar",
     accessibility: {
+      todayDateButton: "Exibir somente viagens na data de hoje",
+
+      tomorrowDateButton: "Exibir somente viagens na data de amanhã",
+      otherDateButton: "Exibir somente viagens na data específica",
       cardHint:
         "Toque duas vezes para ouvir o episódio. Toque duas vezes e segure para {{action}} este episódio.",
       switch: "Ative para mostrar apenas favoritos",

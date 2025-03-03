@@ -8,7 +8,9 @@ const palette = {
   neutral300: "#333333",
   neutral200: "#1A1A1A",
   neutral100: "#000000",
-
+  
+  primaryopacity:'#a95d41f8',
+  primary:'#A54F31',
   primary600: "#F4E0D9",
   primary500: "#E8C1B4",
   primary400: "#DDA28E",
@@ -39,7 +41,7 @@ export const colors = {
   palette,
   transparent: "rgba(0, 0, 0, 0)",
   text: palette.neutral800,
-  textDim: palette.neutral600,
+  textDim: palette.neutral700,
   background: palette.neutral200,
   border: palette.neutral400,
   tint: palette.primary500,
