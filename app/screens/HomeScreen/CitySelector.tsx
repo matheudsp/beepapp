@@ -1,9 +1,9 @@
-import { TextField } from "@/components/TextField";
-import type { TxKeyPath } from "@/i18n";
-import type { ThemedStyle } from "@/theme";
-import { useAppTheme } from "@/utils/useAppTheme";
-import React, { useRef, useState } from "react";
-import { View, FlatList, TouchableOpacity, Text, type TextInput, type ViewStyle } from "react-native";
+// CitySelector.tsx
+import React, { useEffect, useState } from "react";
+import { View, TextInput, TouchableOpacity, Text, StyleSheet } from "react-native";
+import CitySuggestionsModal from "./CitySuggestionsModal"; // Importe o modal
+import { translate, type TxKeyPath } from "@/i18n";
+import { supabase } from "@/services/supabase/supabase";
 
 
 const CITIES = [
@@ -17,98 +17,104 @@ const CITIES = [
   "Manaus",
   "Recife",
   "Porto Alegre",
-  "Floriano"
+  "Floriano",
 ];
 interface CitySelectorProps {
   value: string;
-  onChangeText: (text: string) => void; // Define corretamente o tipo
-  labelTx: TxKeyPath | undefined;
-  placeholderTx: TxKeyPath | undefined;
+  onChangeText: (text: string) => void;
+  labelTx: TxKeyPath;
+  placeholderTx: TxKeyPath;
 }
-
-
+interface TripData {
+  origin: string;
+  destination: string;
+}
 export const CitySelector: React.FC<CitySelectorProps> = ({
   value,
   onChangeText,
   labelTx,
-  placeholderTx,
+  placeholderTx
 }) => {
-  const [filteredCities, setFilteredCities] = useState<string[]>([]);
-  const Input = useRef<TextInput>(null)
-  const { themed, theme: { colors } } = useAppTheme()
-  
-  const handleSearch = (text: string) => {
-    onChangeText(text);
+  const [modalVisible, setModalVisible] = useState(false);
+  const [refreshing, setRefreshing] = useState(false)
 
-    if (text.length > 0) {
-      const filtered = CITIES.filter((city) =>
-        city.toLowerCase().includes(text.toLowerCase())
-      );
-      setFilteredCities(filtered);
-    } else {
-      setFilteredCities([]);
-    }
-  };
+  const [cities, setCities] = useState<string[]>([]);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  useEffect(() => {
+    (async function load() {
+      setIsLoading(true);
+      const { data, error } = await supabase
+        .from("trips")
+        .select("origin, destination");
+
+      if (data && Array.isArray(data)) {
+        const uniqueCities = new Set<string>(); // Use a Set to ensure uniqueness
+
+        data.forEach((trip: TripData) => {
+          if (trip.origin) {
+            uniqueCities.add(trip.origin);
+          }
+          if (trip.destination) {
+            uniqueCities.add(trip.destination);
+          }
+        });
+
+        setCities(Array.from(uniqueCities)); // Convert the Set back to an array
+      } else {
+        // Handle error or no data case
+        if (error) {
+          console.error("Error fetching trips:", error);
+        } else {
+          console.warn("No trip data received.");
+        }
+        setCities([]); // Set cities to an empty array in case of error or no data
+      }
+      setIsLoading(false);
+    })();
+  }, [supabase]);
 
   const handleSelectCity = (city: string) => {
     onChangeText(city);
-    setFilteredCities([]); // Esconde as sugestões após selecionar
+    setModalVisible(false);
   };
 
   return (
-    <View style={{ position: "relative" }}>
-      <TextField
-        value={value}
-        onChangeText={handleSearch}
-        style={themed($textInput)}
-      containerStyle={themed($textField)}
-      inputWrapperStyle={themed(textInputWrapper)} // Mantendo os estilos do TextField
-          labelTx={labelTx}
-       placeholderTx={placeholderTx}
-      onSubmitEditing={() => Input.current?.focus()}
-      />
-    
+    <View style={styles.container}>
+      <Text style={styles.label}>{translate(labelTx)}</Text>
+      <TouchableOpacity
+        style={styles.input}
+        onPress={() => setModalVisible(true)}
+      >
+        <Text>{value || translate(placeholderTx
+        )}</Text>
+      </TouchableOpacity>
 
-      {filteredCities.length > 0 && (
-        <FlatList
-          data={filteredCities}
-          keyExtractor={(item) => item}
-          style={{
-            position: "absolute",
-            top: 60, // Ajuste para alinhar corretamente abaixo do TextField
-            width: "100%",
-            backgroundColor: "white",
-            borderRadius: 8,
-            borderWidth: 1,
-            borderColor: "#ccc",
-            zIndex: 10,
-          }}
-          renderItem={({ item }) => (
-            <TouchableOpacity
-              style={{ padding: 12, borderBottomWidth: 1, borderBottomColor: "#ddd" }}
-              onPress={() => handleSelectCity(item)}
-            >
-              <Text>{item}</Text>
-            </TouchableOpacity>
-          )}
-        />
-      )}
+      <CitySuggestionsModal
+        visible={modalVisible}
+        onClose={() => setModalVisible(false)}
+        cities={cities}
+        onSelectCity={handleSelectCity}
+      />
     </View>
   );
 };
 
-const $textInput: ThemedStyle<ViewStyle> = ({ spacing }) => ({
-  height: spacing.xxl,
+const styles = StyleSheet.create({
+  container: {
+    marginBottom: 20,
 
-})
-
-const textInputWrapper: ThemedStyle<ViewStyle> = ({ colors }) => ({
-  borderWidth: 0,
-  backgroundColor: colors.palette.primaryopacity
-})
-const $textField: ThemedStyle<ViewStyle> = ({ spacing }) => ({
-  marginBottom: spacing.xxxs,
-  width: '95%',
+  },
+  label: {
+    marginBottom: 5,
+  },
+  input: {
+    borderWidth: 0,
 
 
-})
+    padding: 10,
+  },
+});
+
+
+
+export default CitySelector;

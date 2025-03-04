@@ -1,16 +1,16 @@
 import { observer } from "mobx-react-lite"
 import { ComponentType, FC, useEffect, useMemo, useState } from "react"
 import {
-  AccessibilityProps,
+
   ActivityIndicator,
   Image,
-  ImageSourcePropType,
+
   ImageStyle,
-  Platform,
+
   TextStyle,
   View,
   ViewStyle,
-  
+
 } from "react-native"
 
 import {
@@ -21,10 +21,10 @@ import {
   Icon,
   ListView,
   Screen,
-  
+
   Text,
-  
-  
+
+
 } from "@/components"
 import { isRTL, translate } from "@/i18n"
 import { useStores } from "../../models"
@@ -36,12 +36,11 @@ import { delay } from "../../utils/delay"
 import { useAppTheme } from "@/utils/useAppTheme"
 import Greeting from "@/components/Gretting"
 import { useAuth } from "@/contexts/useAuth"
-import { format } from "date-fns"
-import { ptBR } from "date-fns/locale/pt-BR"
+
 import { CitySelector } from "./CitySelector"
+import { TripCard } from "./TripCard"
 
 
-const ICON_SIZE = 14
 
 export const HomeScreen: FC<TabScreenProps<"Home">> = observer(
   function DriverListScreen(_props) {
@@ -95,7 +94,7 @@ export const HomeScreen: FC<TabScreenProps<"Home">> = observer(
 
         <ListView<Trip>
           data={tripStore.tripsForList.slice()}
-          extraData={ tripStore.trips.length}
+          extraData={tripStore.trips.length}
           refreshing={refreshing}
           estimatedItemSize={177}
           onRefresh={manualRefresh}
@@ -213,14 +212,10 @@ export const HomeScreen: FC<TabScreenProps<"Home">> = observer(
             </>
           }
           renderItem={({ item }) => (
-            <>
-
-              <TripCard
-                trip={item}
-                onPress={() => {}}
-              />
-            </>
-
+            <TripCard
+              trip={item}
+              onPress={() => { }}
+            />
           )}
         />
       </Screen>
@@ -228,118 +223,7 @@ export const HomeScreen: FC<TabScreenProps<"Home">> = observer(
   },
 )
 
-const TripCard = observer(function TripCard({
-  trip,
-  onPress,
-}: {
-  trip: Trip
-  onPress: () => void
-  
-}) {
-  const {
-    theme: { colors },
-    themed,
-  } = useAppTheme()
-  
 
-  const imageUri = useMemo<ImageSourcePropType>(
-    () => trip.driver?.profile_image 
-      ? { uri: trip.driver.profile_image } 
-      : require("../../../assets/images/no-profile.png"),
-    [trip.driver?.profile_image]
-  );
-  /**
-   * Android has a "longpress" accessibility action. iOS does not, so we just have to use a hint.
-   * @see https://reactnative.dev/docs/accessibility#accessibilityactions
-   */
-  const accessibilityHintProps = useMemo(
-    () =>
-      Platform.select<AccessibilityProps>({
-        ios: {
-          accessibilityLabel: translate("HomeScreen:accessibility.cardHint"),
-          accessibilityHint: translate("HomeScreen:accessibility.cardHint"),
-        },
-        android: {
-          accessibilityLabel: translate("HomeScreen:accessibility.cardHint"),
-          accessibilityActions: [
-            {
-              name: "longpress",
-              label: translate("HomeScreen:accessibility.cardHint"),
-            },
-          ],
-          onAccessibilityAction: ({ nativeEvent }) => {
-            if (nativeEvent.actionName === "longpress") {
-              //  open the trip screen
-            }
-          },
-        },
-      }),
-    [],
-  )
-
-  const handlePressCard = () => {
-
-  }
-
-  return (
-    <Card
-      style={themed($item)}
-      verticalAlignment="force-footer-bottom"
-      onPress={handlePressCard}
-      onLongPress={handlePressCard}
-      HeadingComponent={
-        <View style={[$styles.row, themed($metadata)]}>
-          <Text
-            style={themed($metadataText)}
-            size="lg"
-            accessibilityLabel={trip.origin + ' → ' + trip.destination}
-          >
-            {trip.origin} → {trip.destination}
-          </Text>
-
-        </View>
-      }
-      // contentStyle={}
-      ContentComponent={<View style={[$styles.row, { gap: 5, alignItems: 'center' }]}>
-        <Icon
-          icon="driver"
-          color={colors.text}
-
-          size={20}
-          onPress={() => { }}
-        />
-        <Text>
-          {trip.driver?.first_name} {trip.driver?.last_name}
-        </Text>
-      </View>
-      }
-
-      {...accessibilityHintProps}
-      RightComponent={<Image source={imageUri} style={themed($imageDriver)} />}
-      FooterComponent={
-        <View style={[$styles.row, themed($metadata)]}>
-
-          <Text
-            style={themed($metadataText)}
-            size="xs"
-
-          >
-            Saída: {format(new Date(trip.departure), "dd/MM/yyyy HH:mm", { locale: ptBR }) + 'h'}
-          </Text>
-          <Text
-            style={themed($metadataText)}
-            accessibilityLabel={trip.seats.toString()}
-            size="xs"
-
-          >
-            Vagas disponíveis: {trip.seats}
-          </Text>
-
-        </View>
-      }
-    />
-  )
-})
 
 // #region Styles
 
@@ -365,44 +249,11 @@ const $itemProfileImage: ThemedStyle<ImageStyle> = ({ }) => ({
   height: 44
 })
 
-const $item: ThemedStyle<ViewStyle> = ({ colors, spacing }) => ({
-  padding: spacing.md,
-  margin: spacing.xl,
-  minHeight: 120,
-  backgroundColor: colors.palette.neutral100,
-})
-
-const $imageDriver: ThemedStyle<ImageStyle> = ({ spacing }) => ({
-  borderRadius: 50,
-  alignSelf: "center",
-  width: 64,
-  height: 64
-})
-
 const $search: ThemedStyle<ViewStyle> = ({ spacing }) => ({
   marginTop: spacing.md,
 })
 
-const $labelStyle: TextStyle = {
-  textAlign: "left",
-}
 
-const $iconContainer: ThemedStyle<ViewStyle> = ({ spacing }) => ({
-  height: ICON_SIZE,
-  width: ICON_SIZE,
-  marginEnd: spacing.sm,
-})
-
-const $metadata: ThemedStyle<TextStyle> = ({ colors, spacing }) => ({
-  color: colors.textDim,
-
-})
-
-const $metadataText: ThemedStyle<TextStyle> = ({ colors, spacing }) => ({
-  color: colors.textDim,
-  marginEnd: spacing.md,
-
-})
 
 
 
