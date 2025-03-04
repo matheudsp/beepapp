@@ -117,7 +117,7 @@ const pt = {
     noFavoritesEmptyState: {
       heading: "Isso parece um pouco vazio",
       content:
-        "Nenhum favorito foi adicionado ainda. Toque no coração de um episódio para adicioná-lo aos favoritos!",
+        "Nenhum viagem foi encontrada!",
     },
   },
 }

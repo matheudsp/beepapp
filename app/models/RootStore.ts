@@ -8,7 +8,15 @@ import { ProfileStoreModel } from "./Profile/ProfileStore"
  */
 export const RootStoreModel = types.model("RootStore").props({
   authenticationStore: types.optional(AuthenticationStoreModel, {}),
-  tripStore: types.optional(TripStoreModel, {}),
+  tripStore: types.optional(TripStoreModel, {
+    trips: [],
+    isLoading: false,
+    searchParams: {
+      origin: "",
+      destination: "",
+      departureDate: ""
+    }
+  }),
   profileStore: types.optional(ProfileStoreModel, {}),
 })
 

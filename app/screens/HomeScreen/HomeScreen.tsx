@@ -242,8 +242,8 @@ const TripCard = observer(function TripCard({
   
 
   const imageUri = useMemo<ImageSourcePropType>(
-    () => trip.driver.profile_image ? { uri: trip.driver.profile_image } : require("../../../assets/images/no-profile.png"),
-    [trip.driver.profile_image]
+    () => trip.driver?.profile_image ? { uri: trip.driver.profile_image } : require("../../../assets/images/no-profile.png"),
+    [trip.driver?.profile_image]
   )
   /**
    * Android has a "longpress" accessibility action. iOS does not, so we just have to use a hint.
@@ -306,7 +306,7 @@ const TripCard = observer(function TripCard({
           onPress={() => { }}
         />
         <Text>
-          {trip.driver.first_name} {trip.driver.last_name}
+          {trip.driver?.first_name} {trip.driver?.last_name}
         </Text>
       </View>
       }

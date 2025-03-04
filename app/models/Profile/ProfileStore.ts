@@ -14,49 +14,49 @@ export const ProfileStoreModel = types
     /**
      * Fetch current user profile from Supabase
      */
-    async fetchCurrentProfile() {
-      try {
-        const profile = await profileService.getCurrentProfile();
-        if (profile) {
-          // Add to profiles array if not already there
-          const existingIndex = store.profiles.findIndex(p => p.id === profile.id);
-          if (existingIndex >= 0) {
-            store.profiles[existingIndex] = profile;
-          } else {
-            store.profiles.push(profile);
-          }
+    // async fetchCurrentProfile() {
+    //   try {
+    //     const profile = await profileService.getCurrentProfile();
+    //     if (profile) {
+    //       // Add to profiles array if not already there
+    //       const existingIndex = store.profiles.findIndex(p => p.id === profile.id);
+    //       if (existingIndex >= 0) {
+    //         store.profiles[existingIndex] = profile;
+    //       } else {
+    //         store.profiles.push(profile);
+    //       }
           
-          // Set as current profile
-          store.setProp("currentProfile", profile);
-        }
-        return profile;
-      } catch (error) {
-        console.error("Error fetching current profile:", error);
-        return null;
-      }
-    },
+    //       // Set as current profile
+    //       store.setProp("currentProfile", profile);
+    //     }
+    //     return profile;
+    //   } catch (error) {
+    //     console.error("Error fetching current profile:", error);
+    //     return null;
+    //   }
+    // },
 
     /**
      * Fetch a specific profile by ID
      */
-    async fetchProfileById(id: string) {
-      try {
-        const profile = await profileService.getProfileById(id);
-        if (profile) {
-          // Add to profiles array if not already there
-          const existingIndex = store.profiles.findIndex(p => p.id === profile.id);
-          if (existingIndex >= 0) {
-            store.profiles[existingIndex] = profile;
-          } else {
-            store.profiles.push(profile);
-          }
-        }
-        return profile;
-      } catch (error) {
-        console.error(`Error fetching profile with ID ${id}:`, error);
-        return null;
-      }
-    }
+    // async fetchProfileById(id: string) {
+    //   try {
+    //     const profile = await profileService.getProfileById(id);
+    //     if (profile) {
+    //       // Add to profiles array if not already there
+    //       const existingIndex = store.profiles.findIndex(p => p.id === profile.id);
+    //       if (existingIndex >= 0) {
+    //         store.profiles[existingIndex] = profile;
+    //       } else {
+    //         store.profiles.push(profile);
+    //       }
+    //     }
+    //     return profile;
+    //   } catch (error) {
+    //     console.error(`Error fetching profile with ID ${id}:`, error);
+    //     return null;
+    //   }
+    // }
   }))
   .views((store) => ({
     /**

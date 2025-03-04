@@ -25,6 +25,11 @@ export const TripStoreModel = types
     async fetchTrips() {
       try {
         store.setProp("isLoading", true);
+        
+        // First make sure we've fetched profiles
+        const rootStore = getRootStore(store);
+        // await rootStore.profileStore.fetchAllProfiles(); // You'll need to add this method
+        
         const trips = await tripService.findAll();
         store.setProp("trips", trips);
         return trips;

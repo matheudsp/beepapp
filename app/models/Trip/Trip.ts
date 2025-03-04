@@ -17,7 +17,8 @@ export const TripModel = types
     origin: types.string,
     destination: types.string,
     seats: types.number,
-    driver: types.reference(types.late(() => ProfileModel)),
+    // Make driver reference optional with maybeNull
+    driver: types.maybeNull(types.reference(types.late(() => ProfileModel))),
     created_at: types.optional(types.string, () => new Date().toISOString()),
     updated_at: types.optional(types.string, () => new Date().toISOString())
   })
@@ -43,6 +44,10 @@ export const TripModel = types
     
     get formattedRoute() {
       return `${trip.origin} → ${trip.destination}`;
+    },
+    
+    get driverName() {
+      return trip.driver ? trip.driver.fullName : "Motorista não definido";
     }
   }));
   
