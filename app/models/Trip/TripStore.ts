@@ -26,9 +26,6 @@ export const TripStoreModel = types
       try {
         store.setProp("isLoading", true);
         
-        // First make sure we've fetched profiles
-        const rootStore = getRootStore(store);
-        // await rootStore.profileStore.fetchAllProfiles(); // You'll need to add this method
         
         const trips = await tripService.findAll();
         store.setProp("trips", trips);
@@ -40,7 +37,6 @@ export const TripStoreModel = types
         store.setProp("isLoading", false);
       }
     },
-
     /**
      * Busca viagens com base nos parâmetros de busca
      */
