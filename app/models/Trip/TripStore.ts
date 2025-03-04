@@ -5,7 +5,7 @@ import {  TripModel } from "./Trip";
 import { withSetPropAction } from "../helpers/withSetPropAction";
 import { getRootStore } from "../helpers/getRootStore";
 
-export const TripStoreModel: IAnyModelType = types
+export const TripStoreModel = types
   .model("TripStore")
   .props({
     trips: types.array(TripModel),
@@ -86,48 +86,48 @@ export const TripStoreModel: IAnyModelType = types
     /**
      * Reserva uma vaga em uma viagem (como passageiro)
      */
-    async bookTrip(tripId: string, bookingData: any) {
-      try {
-        const rootStore = getRootStore(store);
-        const currentUserId = rootStore.profileStore.currentProfile?.id;
+    // async bookTrip(tripId: string, bookingData: any) {
+    //   try {
+    //     const rootStore = getRootStore(store);
+    //     const currentUserId = rootStore.profileStore.currentProfile?.id;
         
-        if (!currentUserId) {
-          throw new Error("Usuário não autenticado");
-        }
+    //     if (!currentUserId) {
+    //       throw new Error("Usuário não autenticado");
+    //     }
         
-        const booking = await tripService.bookTrip(tripId, {
-          ...bookingData,
-          passenger_id: currentUserId
-        });
+    //     const booking = await tripService.bookTrip(tripId, {
+    //       ...bookingData,
+    //       passenger_id: currentUserId
+    //     });
         
-        store.bookings.push(booking);
-        return booking;
-      } catch (error) {
-        console.error("Erro ao reservar viagem:", error);
-        throw error;
-      }
-    },
+    //     store.bookings.push(booking);
+    //     return booking;
+    //   } catch (error) {
+    //     console.error("Erro ao reservar viagem:", error);
+    //     throw error;
+    //   }
+    // },
 
-    /**
-     * Busca reservas do usuário atual
-     */
-    async fetchUserBookings() {
-      try {
-        const rootStore = getRootStore(store);
-        const currentUserId = rootStore.profileStore.currentProfile?.id;
+    // /**
+    //  * Busca reservas do usuário atual
+    //  */
+    // async fetchUserBookings() {
+    //   try {
+    //     const rootStore = getRootStore(store);
+    //     const currentUserId = rootStore.profileStore.currentProfile?.id;
         
-        if (!currentUserId) {
-          throw new Error("Usuário não autenticado");
-        }
+    //     if (!currentUserId) {
+    //       throw new Error("Usuário não autenticado");
+    //     }
         
-        const bookings = await tripService.getUserBookings(currentUserId);
-        store.setProp("bookings", bookings);
-        return bookings;
-      } catch (error) {
-        console.error("Erro ao buscar reservas:", error);
-        return [];
-      }
-    },
+    //     const bookings = await tripService.getUserBookings(currentUserId);
+    //     store.setProp("bookings", bookings);
+    //     return bookings;
+    //   } catch (error) {
+    //     console.error("Erro ao buscar reservas:", error);
+    //     return [];
+    //   }
+    // },
 
   
 
@@ -149,16 +149,16 @@ export const TripStoreModel: IAnyModelType = types
     /**
      * Retorna as reservas do usuário atual com status "PENDING"
      */
-    get pendingBookings() {
-      return store.bookings.filter(booking => booking.status === "PENDING");
-    },
+    // get pendingBookings() {
+    //   return store.bookings.filter(booking => booking.status === "PENDING");
+    // },
     
-    /**
-     * Retorna as reservas do usuário atual com status "CONFIRMED"
-     */
-    get confirmedBookings() {
-      return store.bookings.filter(booking => booking.status === "CONFIRMED");
-    }
+    // /**
+    //  * Retorna as reservas do usuário atual com status "CONFIRMED"
+    //  */
+    // get confirmedBookings() {
+    //   return store.bookings.filter(booking => booking.status === "CONFIRMED");
+    // }
   }))
   .actions((store) => ({
    

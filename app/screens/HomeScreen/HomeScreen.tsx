@@ -1,5 +1,5 @@
 import { observer } from "mobx-react-lite"
-import { ComponentType, FC, useCallback, useEffect, useMemo, useRef, useState } from "react"
+import { ComponentType, FC, useEffect, useMemo, useState } from "react"
 import {
   AccessibilityProps,
   ActivityIndicator,
@@ -7,20 +7,12 @@ import {
   ImageSourcePropType,
   ImageStyle,
   Platform,
-  StyleSheet,
   TextStyle,
   View,
   ViewStyle,
-  type TextInput,
+  
 } from "react-native"
-import { type ContentStyle } from "@shopify/flash-list"
-import Animated, {
-  Extrapolation,
-  interpolate,
-  useAnimatedStyle,
-  useSharedValue,
-  withSpring,
-} from "react-native-reanimated"
+
 import {
   Button,
   ButtonAccessoryProps,
@@ -29,10 +21,10 @@ import {
   Icon,
   ListView,
   Screen,
-  Switch,
+  
   Text,
-  TextField,
-  type TextFieldAccessoryProps,
+  
+  
 } from "@/components"
 import { isRTL, translate } from "@/i18n"
 import { useStores } from "../../models"
@@ -103,7 +95,7 @@ export const HomeScreen: FC<TabScreenProps<"Home">> = observer(
 
         <ListView<Trip>
           data={tripStore.tripsForList.slice()}
-          extraData={tripStore.favorites.length + tripStore.trips.length}
+          extraData={ tripStore.trips.length}
           refreshing={refreshing}
           estimatedItemSize={177}
           onRefresh={manualRefresh}
@@ -115,16 +107,16 @@ export const HomeScreen: FC<TabScreenProps<"Home">> = observer(
                 preset="generic"
                 style={themed($emptyState)}
                 headingTx={
-                  tripStore.favoritesOnly
+                  tripStore
                     ? "HomeScreen:noFavoritesEmptyState.heading"
                     : undefined
                 }
                 contentTx={
-                  tripStore.favoritesOnly
+                  tripStore
                     ? "HomeScreen:noFavoritesEmptyState.content"
                     : undefined
                 }
-                button={tripStore.favoritesOnly ? "" : undefined}
+                button={tripStore ? "" : undefined}
                 buttonOnPress={manualRefresh}
                 imageStyle={$emptyStateImage}
                 ImageProps={{ resizeMode: "contain" }}
@@ -225,7 +217,7 @@ export const HomeScreen: FC<TabScreenProps<"Home">> = observer(
 
               <TripCard
                 trip={item}
-                onPress={() => tripStore.toggleFavorite(item)}
+                onPress={() => {}}
               />
             </>
 

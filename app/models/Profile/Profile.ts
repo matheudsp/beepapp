@@ -14,7 +14,7 @@ export const ProfileModel = types
     profile_image: types.maybeNull(types.string),
     cpf: types.maybeNull(types.string),
     phone_number: types.maybeNull(types.string),
-    role: types.enumeration("Role", ["DRIVER", "PASSENGER"])
+    role: types.maybeNull(types.enumeration("Role", ["DRIVER", "PASSENGER"]))
   })
   .actions(withSetPropAction)
   .views((profile) => ({
