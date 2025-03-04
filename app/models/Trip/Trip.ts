@@ -1,18 +1,13 @@
 import { Instance, SnapshotIn, SnapshotOut, types } from "mobx-state-tree"
-import { withSetPropAction } from "./helpers/withSetPropAction"
-import { formatDate } from "../utils/formatDate"
+import { withSetPropAction } from "../helpers/withSetPropAction"
+import { formatDate } from "@/utils/formatDate"
 import { translate } from "@/i18n"
-
-interface Enclosure {
-  link: string
-  type: string
-  length: number
-  duration: number
-  rating: { scheme: string; value: string }
-}
+import { ProfileModel } from "../Profile/Profile"
+import { format } from "date-fns"
+import { ptBR } from "date-fns/locale/pt-BR"
 
 /**
- * This represents an trip of React Native Radio.
+ * Trip model representing a driver's trip offering
  */
 export const TripModel = types
   .model("Trip")
@@ -22,11 +17,9 @@ export const TripModel = types
     origin: types.string,
     destination: types.string,
     seats: types.number,
-    driver: types.model({
-      first_name: types.string,
-      last_name:types.string,
-      profile_image: types.maybeNull(types.string), // Pode ser null
-    }),
+    driver: types.reference(types.late(() => ProfileModel)),
+    created_at: types.optional(types.string, () => new Date().toISOString()),
+    updated_at: types.optional(types.string, () => new Date().toISOString())
   })
   .actions(withSetPropAction)
   .views((trip) => ({
@@ -43,6 +36,14 @@ export const TripModel = types
         return { textLabel: "", accessibilityLabel: "" };
       }
     },
+    
+    get formattedDeparture() {
+      return format(new Date(trip.departure), "dd/MM/yyyy HH:mm", { locale: ptBR }) + 'h';
+    },
+    
+    get formattedRoute() {
+      return `${trip.origin} → ${trip.destination}`;
+    }
   }));
   
 export interface Trip extends Instance<typeof TripModel> {}

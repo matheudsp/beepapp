@@ -35,17 +35,19 @@ import {
   type TextFieldAccessoryProps,
 } from "@/components"
 import { isRTL, translate } from "@/i18n"
-import { useStores } from "../models"
-import { Trip } from "../models/Trip"
-import { TabScreenProps } from "../navigators/Navigator"
+import { useStores } from "../../models"
+import { Trip } from "../../models/Trip/Trip"
+import { TabScreenProps } from "../../navigators/Navigator"
 import type { ThemedStyle } from "@/theme"
-import { $styles, colors } from "../theme"
-import { delay } from "../utils/delay"
+import { $styles, colors } from "../../theme"
+import { delay } from "../../utils/delay"
 import { useAppTheme } from "@/utils/useAppTheme"
 import Greeting from "@/components/Gretting"
 import { useAuth } from "@/contexts/useAuth"
 import { format } from "date-fns"
 import { ptBR } from "date-fns/locale/pt-BR"
+import { CitySelector } from "./CitySelector"
+
 
 const ICON_SIZE = 14
 
@@ -59,8 +61,6 @@ export const HomeScreen: FC<TabScreenProps<"Home">> = observer(
     const [actualLocation, setActualLocation] = useState("")
     const [destinationLocation, setDestinationLocation] = useState("")
 
-    const actualLocationInput = useRef<TextInput>(null)
-    const destinationLocationInput = useRef<TextInput>(null)
 
     // initially, kick off a background refresh without the refreshing UI
     useEffect(() => {
@@ -137,44 +137,23 @@ export const HomeScreen: FC<TabScreenProps<"Home">> = observer(
                 <View style={[$styles.row, { display: 'flex', justifyContent: 'space-between', alignItems: "center" }]}>
                   <Text preset="heading" style={themed($greeting)} tx={Greeting()} />
 
-                  <Image source={user?.image ? { uri: user.image } : require("../../assets/images/no-profile.png")} style={themed($itemProfileImage)} />
+                  <Image source={user?.image ? { uri: user.image } : require("../../../assets/images/no-profile.png")} style={themed($itemProfileImage)} />
 
 
                 </View>
 
                 <View style={themed($search)}>
-
-                  <TextField
+                  <CitySelector
                     value={actualLocation}
                     onChangeText={setActualLocation}
-                    style={themed($textInput)}
-                    containerStyle={themed($textField)}
-                    inputWrapperStyle={themed(textInputWrapper)}
-                    autoCapitalize="none"
-                    autoComplete="postal-address"
-                    autoCorrect={false}
-                    keyboardType="default"
                     labelTx="HomeScreen:actualLocationFieldLabel"
                     placeholderTx="HomeScreen:actualLocationFieldPlaceholder"
-
-
-                    onSubmitEditing={() => actualLocationInput.current?.focus()}
                   />
-                  <TextField
+                  <CitySelector
                     value={destinationLocation}
                     onChangeText={setDestinationLocation}
-                    style={themed($textInput)}
-                    containerStyle={themed($textField)}
-                    inputWrapperStyle={themed(textInputWrapper)}
-                    autoCapitalize="none"
-                    autoComplete="postal-address"
-                    autoCorrect={false}
-                    keyboardType="default"
                     labelTx="HomeScreen:destinationLocationFieldLabel"
                     placeholderTx="HomeScreen:destinationLocationFieldPlaceholder"
-
-
-                    onSubmitEditing={() => destinationLocationInput.current?.focus()}
                   />
                 </View>
 
@@ -246,8 +225,7 @@ export const HomeScreen: FC<TabScreenProps<"Home">> = observer(
 
               <TripCard
                 trip={item}
-                isFavorite={tripStore.hasFavorite(item)}
-                onPressFavorite={() => tripStore.toggleFavorite(item)}
+                onPress={() => tripStore.toggleFavorite(item)}
               />
             </>
 
@@ -262,17 +240,17 @@ const TripCard = observer(function TripCard({
   trip,
 }: {
   trip: Trip
-  onPressFavorite: () => void
-  isFavorite: boolean
+  onPress: () => void
+  
 }) {
   const {
     theme: { colors },
     themed,
   } = useAppTheme()
-
+  
 
   const imageUri = useMemo<ImageSourcePropType>(
-    () => trip.driver.profile_image ? { uri: trip.driver.profile_image } : require("../../assets/images/no-profile.png"),
+    () => trip.driver.profile_image ? { uri: trip.driver.profile_image } : require("../../../assets/images/no-profile.png"),
     [trip.driver.profile_image]
   )
   /**
@@ -327,7 +305,7 @@ const TripCard = observer(function TripCard({
         </View>
       }
       // contentStyle={}
-      ContentComponent={<View style={[$styles.row,{gap:5, alignItems:'center'}]}>
+      ContentComponent={<View style={[$styles.row, { gap: 5, alignItems: 'center' }]}>
         <Icon
           icon="driver"
           color={colors.text}
@@ -375,17 +353,6 @@ const $greeting: ThemedStyle<TextStyle> = ({ colors }) => ({
   color: colors.text,
 
 })
-
-const $textInput: ThemedStyle<ViewStyle> = ({ spacing }) => ({
-  height: spacing.xxl,
-
-})
-
-const textInputWrapper: ThemedStyle<ViewStyle> = ({ colors }) => ({
-  borderWidth: 0,
-  backgroundColor: colors.palette.primaryopacity
-})
-
 const $heading: ThemedStyle<ViewStyle> = ({ spacing, colors }) => ({
   marginBottom: spacing.lg,
   backgroundColor: colors.palette.primary,
@@ -397,12 +364,7 @@ const $dateSelector: ThemedStyle<ViewStyle> = ({ spacing }) => ({
   paddingHorizontal: spacing.xl,
 
 })
-const $textField: ThemedStyle<ViewStyle> = ({ spacing, colors }) => ({
-  marginBottom: spacing.xxxs,
-  width: '95%',
 
-
-})
 const $itemProfileImage: ThemedStyle<ImageStyle> = ({ }) => ({
   width: 44,
   height: 44
@@ -438,13 +400,13 @@ const $iconContainer: ThemedStyle<ViewStyle> = ({ spacing }) => ({
 
 const $metadata: ThemedStyle<TextStyle> = ({ colors, spacing }) => ({
   color: colors.textDim,
-  
+
 })
 
 const $metadataText: ThemedStyle<TextStyle> = ({ colors, spacing }) => ({
   color: colors.textDim,
   marginEnd: spacing.md,
-  
+
 })
 
 

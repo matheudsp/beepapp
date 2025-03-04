@@ -13,6 +13,11 @@ export type TripType = {
   };
 };
 
+export type CityType = {
+  origin: string;
+  destination: string;
+};
+
 export const tripService = {
   /**
    * Busca todas as viagens cadastradas no banco de dados
@@ -25,10 +30,8 @@ export const tripService = {
         "id, departure, origin, destination, seats, driver:profiles!trips_driver_id_fkey(id, first_name, last_name, profile_image)"
       )
 
-      
     if (error) {
       console.error("Erro ao buscar viagens:", error.message);
-
       throw new Error("Não foi possível buscar as viagens");
     }
 
@@ -39,13 +42,27 @@ export const tripService = {
       origin: trip.origin,
       destination: trip.destination,
       seats: trip.seats,
-      driver: trip.driver  && {
-            first_name: trip.driver[0].first_name,
-            last_name: trip.driver[0].last_name,
-            profile_image: trip.driver[0].profile_image || null,
-          } 
+      driver: trip.driver && {
+        first_name: trip.driver[0].first_name,
+        last_name: trip.driver[0].last_name,
+        profile_image: trip.driver[0].profile_image || null,
+      }
     })) as TripType[];
   },
+
+  findCities: async (): Promise<CityType[]> => {
+    const { data, error } = await supabase
+      .from("trips")
+      .select("origin, destination")
+    
+    if (error) {
+      console.error("Erro ao buscar viagens:", error.message);
+      throw new Error("Não foi possível buscar as viagens");
+    }
+    
+    return (data ?? []).map(trip => ({
+      origin: trip.origin,
+      destination: trip.destination,
+    }));
+  }
 };
-
-

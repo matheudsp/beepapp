@@ -8,7 +8,7 @@
 
 
 
-import type { TripSnapshotIn } from "../../models/Trip"
+import type { TripSnapshotIn } from "../../models/Trip/Trip"
 import { tripService } from "../supabase/queries/trips"
 
 export class Api {

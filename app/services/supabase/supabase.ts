@@ -24,6 +24,7 @@ export const supabase = createClient(
     auth: {
       storage: supabaseStorage,
       autoRefreshToken: true,
+      persistSession:true,
       detectSessionInUrl: false,
     },
   }
