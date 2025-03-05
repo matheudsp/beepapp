@@ -1,78 +1,98 @@
-import { Instance, SnapshotOut, types } from "mobx-state-tree";
-import {  ProfileModel } from "./Profile";
-import { withSetPropAction } from "../helpers/withSetPropAction";
-import { profileService } from "@/services/supabase/queries/profiles"; // You'll need to create this service
+// app/models/Profile/ProfileStore.ts
+import { Instance, SnapshotOut, types } from "mobx-state-tree"
+import { ProfileModel } from "./Profile"
+import { withSetPropAction } from "../helpers/withSetPropAction"
+import { supabase } from "@/services/supabase/supabase"
+import { profileService } from "@/services/supabase/queries/profiles"
 
 export const ProfileStoreModel = types
   .model("ProfileStore")
   .props({
     currentProfile: types.maybeNull(types.reference(ProfileModel)),
-    profiles: types.array(ProfileModel)
+    profiles: types.array(ProfileModel),
+    isLoading: types.optional(types.boolean, false)
   })
   .actions(withSetPropAction)
   .actions((store) => ({
-    /**
-     * Fetch current user profile from Supabase
-     */
-    // async fetchCurrentProfile() {
-    //   try {
-    //     const profile = await profileService.getCurrentProfile();
-    //     if (profile) {
-    //       // Add to profiles array if not already there
-    //       const existingIndex = store.profiles.findIndex(p => p.id === profile.id);
-    //       if (existingIndex >= 0) {
-    //         store.profiles[existingIndex] = profile;
-    //       } else {
-    //         store.profiles.push(profile);
-    //       }
-          
-    //       // Set as current profile
-    //       store.setProp("currentProfile", profile);
-    //     }
-    //     return profile;
-    //   } catch (error) {
-    //     console.error("Error fetching current profile:", error);
-    //     return null;
-    //   }
-    // },
-
-    /**
-     * Fetch a specific profile by ID
-     */
-    // async fetchProfileById(id: string) {
-    //   try {
-    //     const profile = await profileService.getProfileById(id);
-    //     if (profile) {
-    //       // Add to profiles array if not already there
-    //       const existingIndex = store.profiles.findIndex(p => p.id === profile.id);
-    //       if (existingIndex >= 0) {
-    //         store.profiles[existingIndex] = profile;
-    //       } else {
-    //         store.profiles.push(profile);
-    //       }
-    //     }
-    //     return profile;
-    //   } catch (error) {
-    //     console.error(`Error fetching profile with ID ${id}:`, error);
-    //     return null;
-    //   }
-    // }
-  }))
-  .views((store) => ({
-    /**
-     * Check if current profile is a driver
-     */
-    get isDriver() {
-      return store.currentProfile?.role === "DRIVER";
+    async fetchCurrentProfile() {
+      try {
+        store.setProp("isLoading", true)
+        
+        const { data: { user } } = await supabase.auth.getUser()
+        if (!user) return null
+        
+        const profile = await profileService.findById(user.id)
+        if (!profile) return null
+        
+        const profileData = {
+          id: profile.id,
+          email: profile.email,
+          first_name: profile.first_name,
+          last_name: profile.last_name,
+          profile_image: profile.profile_image ,
+          cpf: null,
+          phone_number: profile.phone_number,
+          role: profile.role
+        }
+        
+        // Update or add profile
+        const existingIndex = store.profiles.findIndex(p => p.id === profile.id)
+        if (existingIndex >= 0) {
+          store.profiles[existingIndex] = profileData
+        } else {
+          store.profiles.push(profileData)
+        }
+        
+        store.setProp("currentProfile", profile.id)
+        return profile
+      } catch (error) {
+        console.error("Error fetching current profile:", error)
+        return null
+      } finally {
+        store.setProp("isLoading", false)
+      }
     },
 
-    /**
-     * Get profile by ID
-     */
-    getProfileById(id: string) {
-      return store.profiles.find(profile => profile.id === id);
+    async fetchProfileById(id: string) {
+      try {
+        store.setProp("isLoading", true)
+        const profile = await profileService.findById(id)
+        if (!profile) return null
+        
+        const profileData = {
+          id: profile.id,
+          email: profile.email,
+          first_name: profile.first_name,
+          last_name: profile.last_name,
+          profile_image: profile.profile_image,
+          cpf: null,
+          phone_number: profile.phone_number,
+          role: profile.role
+        }
+        
+        // Update or add profile
+        const existingIndex = store.profiles.findIndex(p => p.id === profile.id)
+        if (existingIndex >= 0) {
+          store.profiles[existingIndex] = profileData
+        } else {
+          store.profiles.push(profileData)
+        }
+        
+        return profile
+      } catch (error) {
+        console.error(`Error fetching profile with ID ${id}:`, error)
+        return null
+      } finally {
+        store.setProp("isLoading", false)
+      }
     }
-  }));
-
-export interface ProfileStore extends Instance<typeof ProfileStoreModel> {}
-export interface ProfileStoreSnapshot extends SnapshotOut<typeof ProfileStoreModel> {}
+  }))
+  .views((store) => ({
+    get isDriver() {
+      return store.currentProfile?.role === "DRIVER"
+    },
+    
+    getProfileById(id: string) {
+      return store.profiles.find(profile => profile.id === id)
+    }
+  }))

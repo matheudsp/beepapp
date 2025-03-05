@@ -1,9 +1,12 @@
 // CitySelector.tsx
 import React, { useEffect, useState } from "react";
-import { View, TextInput, TouchableOpacity, Text, StyleSheet } from "react-native";
+import { View, TextInput, TouchableOpacity,  StyleSheet, type TextStyle, type ViewStyle } from "react-native";
 import CitySuggestionsModal from "./CitySuggestionsModal"; // Importe o modal
 import { translate, type TxKeyPath } from "@/i18n";
 import { supabase } from "@/services/supabase/supabase";
+import type { ThemedStyle } from "@/theme";
+import { useAppTheme } from "@/utils/useAppTheme";
+import { Text } from "@/components";
 
 
 const CITIES = [
@@ -37,7 +40,7 @@ export const CitySelector: React.FC<CitySelectorProps> = ({
 }) => {
   const [modalVisible, setModalVisible] = useState(false);
   const [refreshing, setRefreshing] = useState(false)
-
+  const { themed} = useAppTheme()
   const [cities, setCities] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   useEffect(() => {
@@ -79,13 +82,13 @@ export const CitySelector: React.FC<CitySelectorProps> = ({
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.label}>{translate(labelTx)}</Text>
+    <View style={themed($container)}>
+      <Text preset="default" style={themed($label)}>{translate(labelTx)}</Text>
       <TouchableOpacity
-        style={styles.input}
+        style={themed($input)}
         onPress={() => setModalVisible(true)}
       >
-        <Text>{value || translate(placeholderTx
+        <Text  preset="bold" style={themed($text)}>{value || translate(placeholderTx
         )}</Text>
       </TouchableOpacity>
 
@@ -99,21 +102,31 @@ export const CitySelector: React.FC<CitySelectorProps> = ({
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    marginBottom: 20,
-
-  },
-  label: {
-    marginBottom: 5,
-  },
-  input: {
-    borderWidth: 0,
 
 
-    padding: 10,
-  },
-});
+const $container: ThemedStyle<ViewStyle> = ({ spacing }) => ({
+  marginBottom:spacing.sm,
+  
+})
+
+const $label: ThemedStyle<TextStyle> = ({ spacing,colors}) => ({
+  marginBottom:spacing.sm,
+  color:	'rgba(255,255,255,0.90)',
+  
+})
+const $text: ThemedStyle<TextStyle> = ({ spacing,colors }) => ({
+  color:	'rgba(255,255,255,0.50)',
+  fontWeight:"500",
+  fontSize:spacing.md
+})
+
+
+const $input: ThemedStyle<ViewStyle> = ({ spacing ,colors}) => ({
+  borderWidth:0,
+  padding:spacing.md,
+  backgroundColor: colors.palette.primary500,
+  borderRadius:spacing.xxs
+})
 
 
 

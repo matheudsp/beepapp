@@ -228,8 +228,8 @@ export const HomeScreen: FC<TabScreenProps<"Home">> = observer(
 // #region Styles
 
 
-const $greeting: ThemedStyle<TextStyle> = ({ colors }) => ({
-  color: colors.text,
+const $greeting: ThemedStyle<TextStyle> = ({  }) => ({
+  color: '#FFFFFF',
 
 })
 const $heading: ThemedStyle<ViewStyle> = ({ spacing, colors }) => ({

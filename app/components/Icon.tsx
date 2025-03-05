@@ -4,8 +4,9 @@ import { useAppTheme } from "@/utils/useAppTheme"
 import { IconType } from "react-icons" 
 import { 
   FaBell, FaCheck, FaHeart, FaLock, FaBars, FaTimes, 
-  FaArrowLeft, FaArrowRight, FaEye, FaRegEye, FaRegEyeSlash 
+  FaArrowLeft, FaArrowRight, FaRegEye, FaRegEyeSlash 
 } from "react-icons/fa"
+import { MdNavigateNext } from "react-icons/md";
 import { IoCalendarNumberOutline, IoPersonOutline } from "react-icons/io5"
 import { GoHome } from "react-icons/go";
 import { GiFullMotorcycleHelmet } from "react-icons/gi";
@@ -66,5 +67,6 @@ export const iconRegistry = {
   calendar: IoCalendarNumberOutline,
   home: GoHome,
   account: IoPersonOutline,
-  driver:GiFullMotorcycleHelmet
+  driver:GiFullMotorcycleHelmet,
+  next: MdNavigateNext
 }

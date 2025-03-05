@@ -1,11 +1,10 @@
+// app/models/RootStore.ts
 import { Instance, SnapshotOut, types } from "mobx-state-tree"
 import { AuthenticationStoreModel } from "./AuthenticationStore"
 import { TripStoreModel } from "./Trip/TripStore"
 import { ProfileStoreModel } from "./Profile/ProfileStore"
+import { BookingStoreModel } from "./Booking/BookingStore"
 
-/**
- * A RootStore model.
- */
 export const RootStoreModel = types.model("RootStore").props({
   authenticationStore: types.optional(AuthenticationStoreModel, {}),
   tripStore: types.optional(TripStoreModel, {
@@ -17,14 +16,15 @@ export const RootStoreModel = types.model("RootStore").props({
       departureDate: ""
     }
   }),
-  profileStore: types.optional(ProfileStoreModel, {}),
+  profileStore: types.optional(ProfileStoreModel, {
+    profiles: [],
+    isLoading: false
+  }),
+  bookingStore: types.optional(BookingStoreModel, {
+    bookings: [],
+    isLoading: false
+  })
 })
 
-/**
- * The RootStore instance.
- */
 export interface RootStore extends Instance<typeof RootStoreModel> {}
-/**
- * The data of a RootStore.
- */
 export interface RootStoreSnapshot extends SnapshotOut<typeof RootStoreModel> {}

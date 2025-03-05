@@ -9,14 +9,14 @@ const palette = {
   neutral200: "#1A1A1A",
   neutral100: "#000000",
   
-  primaryopacity:'#a95d41f8',
-  primary:'#A54F31',
-  primary600: "#F4E0D9",
-  primary500: "#E8C1B4",
-  primary400: "#DDA28E",
-  primary300: "#D28468",
-  primary200: "#C76542",
-  primary100: "#A54F31",
+  
+  primary: '#20463C',
+  primary600: "#2E6647",
+  primary500: "#365B51",
+  primary400: "#4D8C6A",
+  primary300: "#6BAE8C",
+  primary200: "#8BC8A9",
+  primary100: "#B2E0C4",
 
   secondary500: "#DCDDE9",
   secondary400: "#BCC0D6",
