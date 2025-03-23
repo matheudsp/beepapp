@@ -7,7 +7,7 @@ import {
   FaArrowLeft, FaArrowRight, FaRegEye, FaRegEyeSlash 
 } from "react-icons/fa"
 import { MdNavigateNext } from "react-icons/md";
-import { IoCalendarNumberOutline, IoPersonOutline } from "react-icons/io5"
+import { IoAddCircleOutline, IoCalendarNumberOutline, IoPersonOutline } from "react-icons/io5"
 import { GoHome } from "react-icons/go";
 import { GiFullMotorcycleHelmet } from "react-icons/gi";
 export type IconTypes = keyof typeof iconRegistry
@@ -68,5 +68,6 @@ export const iconRegistry = {
   home: GoHome,
   account: IoPersonOutline,
   driver:GiFullMotorcycleHelmet,
-  next: MdNavigateNext
+  next: MdNavigateNext,
+  add:IoAddCircleOutline 
 }

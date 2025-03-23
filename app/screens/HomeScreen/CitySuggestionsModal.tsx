@@ -88,10 +88,11 @@ const $modalContent: ThemedStyle<ViewStyle> = ({ spacing, colors }) => ({
 
 const $searchInput: ThemedStyle<TextStyle> = ({ spacing, colors }) => ({
 
-  borderWidth: 0,
+  borderWidth: 1,
   borderRadius: spacing.xxs,
-  padding: spacing.md,
-  backgroundColor: colors.palette.neutral300,
+  padding: spacing.sm,
+  borderColor:colors.palette.neutral300,
+  backgroundColor: colors.palette.neutral100,
   color: colors.textDim,
   fontSize: spacing.md,
   fontWeight: '600',

@@ -62,7 +62,11 @@ const pt = {
   },
   Navigator: {
     accountTab: "Conta",
-    HomeTab: "Início",
+    homeTab: "Início",
+    driverTab:"Nova Viagem"
+  },
+  DriverScreen:{
+    title:"Nova Viagem"
   },
   AccountScreen: {
     howTo: "COMO FAZER",

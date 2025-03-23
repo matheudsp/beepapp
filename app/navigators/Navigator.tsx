@@ -4,8 +4,9 @@ import { TextStyle, ViewStyle } from "react-native"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
 import { Icon } from "../components"
 import { translate } from "@/i18n"
-import {  AccountScreen } from "../screens"
+import { AccountScreen } from "../screens"
 import { HomeScreen } from "../screens/HomeScreen/HomeScreen"
+import { DriverScreen } from "../screens"
 import type { ThemedStyle } from "@/theme"
 import { AppStackParamList, AppStackScreenProps } from "./AppNavigator"
 import { useAppTheme } from "@/utils/useAppTheme"
@@ -13,7 +14,8 @@ import { useAppTheme } from "@/utils/useAppTheme"
 export type TabParamList = {
   Showroom: { queryIndex?: string; itemIndex?: string }
   Account: undefined
-  Home: undefined
+  Home: undefined,
+  Driver: undefined
 }
 
 /**
@@ -47,11 +49,12 @@ export function Navigator() {
       screenOptions={{
         headerShown: false,
         tabBarHideOnKeyboard: true,
-        tabBarStyle: themed([$tabBar, { height: bottom + 70 }]),
+        tabBarStyle: themed([$tabBar, { height: bottom + 70, borderTopWidth:1, marginBottom:10, borderTopColor: colors.tint }]),
         tabBarActiveTintColor: colors.text,
         tabBarInactiveTintColor: colors.text,
         tabBarLabelStyle: themed($tabBarLabel),
         tabBarItemStyle: themed($tabBarItem),
+        
       }}
     >
 
@@ -60,24 +63,36 @@ export function Navigator() {
         name="Home"
         component={HomeScreen}
         options={{
-          tabBarAccessibilityLabel: translate("Navigator:HomeTab"),
-          tabBarLabel: translate("Navigator:HomeTab"),
+          tabBarAccessibilityLabel: translate("Navigator:homeTab"),
+          tabBarLabel: translate("Navigator:homeTab"),
           tabBarIcon: ({ focused }) => (
             <Icon icon="home" color={focused ? colors.tint : colors.tintInactive} size={30} />
           ),
         }}
       />
-
+      <Tab.Screen
+        name="Driver"
+        component={DriverScreen}
+        options={{
+          tabBarAccessibilityLabel: translate("Navigator:driverTab"),
+          tabBarLabel: translate("Navigator:driverTab"),
+          tabBarIcon: ({ focused }) => (
+            <Icon icon="add" color={focused ? colors.tint : colors.tintInactive} size={30} />
+          ),
+        }}
+      />
       <Tab.Screen
         name="Account"
         component={AccountScreen}
         options={{
+          tabBarAccessibilityLabel: translate("Navigator:accountTab"),
           tabBarLabel: translate("Navigator:accountTab"),
           tabBarIcon: ({ focused }) => (
             <Icon icon="account" color={focused ? colors.tint : colors.tintInactive} size={30} />
           ),
         }}
       />
+
     </Tab.Navigator>
   )
 }

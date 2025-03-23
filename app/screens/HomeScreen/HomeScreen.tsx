@@ -90,12 +90,13 @@ export const HomeScreen: FC<TabScreenProps<"Home">> = observer(
 
 
     return (
-      <Screen preset="fixed" safeAreaEdges={["top"]} contentContainerStyle={$styles.flex1}>
+      <Screen preset="scroll" safeAreaEdges={["top"]} contentContainerStyle={$styles.flex1}>
 
         <ListView<Trip>
           data={tripStore.tripsForList.slice()}
           extraData={tripStore.trips.length}
           refreshing={refreshing}
+          
           estimatedItemSize={177}
           onRefresh={manualRefresh}
           ListEmptyComponent={
@@ -140,6 +141,7 @@ export const HomeScreen: FC<TabScreenProps<"Home">> = observer(
                     labelTx="HomeScreen:actualLocationFieldLabel"
                     placeholderTx="HomeScreen:actualLocationFieldPlaceholder"
                   />
+                  
                   <CitySelector
                     value={destinationLocation}
                     onChangeText={setDestinationLocation}
@@ -232,6 +234,7 @@ const $greeting: ThemedStyle<TextStyle> = ({  }) => ({
   color: '#FFFFFF',
 
 })
+
 const $heading: ThemedStyle<ViewStyle> = ({ spacing, colors }) => ({
   marginBottom: spacing.lg,
   backgroundColor: colors.palette.primary,
