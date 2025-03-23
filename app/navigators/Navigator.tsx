@@ -15,7 +15,8 @@ export type TabParamList = {
   Showroom: { queryIndex?: string; itemIndex?: string }
   Account: undefined
   Home: undefined,
-  Driver: undefined
+  Driver: undefined,
+
 }
 
 /**

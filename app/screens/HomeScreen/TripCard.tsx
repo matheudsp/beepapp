@@ -25,7 +25,7 @@ export const TripCard = observer(function TripCard({
     theme: { colors },
     themed,
   } = useAppTheme()
-
+ 
 
   const imageUri = useMemo<ImageSourcePropType>(
     () => trip.driver?.profile_image
@@ -63,7 +63,8 @@ export const TripCard = observer(function TripCard({
   )
 
   const handlePressCard = () => {
-
+    onPress()
+    
   }
 
   return (
@@ -91,7 +92,7 @@ export const TripCard = observer(function TripCard({
           color={colors.text}
 
           size={20}
-          onPress={() => { }}
+          
         />
         <Text>
           {trip.driver?.first_name} {trip.driver?.last_name}

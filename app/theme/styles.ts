@@ -4,6 +4,7 @@ import { spacing } from "./spacing"
 /* Use this file to define styles that are used in multiple places in your app. */
 export const $styles = {
   row: { flexDirection: "row" } as ViewStyle,
+  flexRowCenter:{flexDirection:"row", flex:1, alignItems:'baseline', gap:10} as ViewStyle,
   flex1: { flex: 1 } as ViewStyle,
   flexWrap: { flexWrap: "wrap" } as ViewStyle,
 

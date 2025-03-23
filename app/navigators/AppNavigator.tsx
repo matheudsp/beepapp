@@ -36,6 +36,7 @@ export type AppStackParamList = {
   Stack: NavigatorScreenParams<TabParamList>
   // 🔥 Your screens go here
   // IGNITE_GENERATOR_ANCHOR_APP_STACK_PARAM_LIST
+  Trip:undefined
   Dev: undefined
 }
 
@@ -78,6 +79,7 @@ const AppStack = observer(function AppStack() {
           <Stack.Screen name="Stack" component={Navigator} />
 
           <Stack.Screen name="Dev" component={Screens.DevScreen} />
+          <Stack.Screen name="Trip" component={Screens.TripScreen} />
         </>
       ) : (
         <>

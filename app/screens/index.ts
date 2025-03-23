@@ -6,6 +6,6 @@ export * from "./AccountScreen/AccountScreen"
 export * from "./AccountScreen/DevScreen"
 export * from "./ShowroomScreen/ShowroomScreen"
 export * from './DriverScreen'
-
+export * from './TripScreen/TripScreen'
 export * from "./ErrorScreen/ErrorBoundary"
 

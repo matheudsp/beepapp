@@ -1,16 +1,12 @@
 import { observer } from "mobx-react-lite"
 import { ComponentType, FC, useEffect, useMemo, useState } from "react"
 import {
-
   ActivityIndicator,
   Image,
-
   ImageStyle,
-
   TextStyle,
   View,
   ViewStyle,
-
 } from "react-native"
 
 import {
@@ -21,10 +17,7 @@ import {
   Icon,
   ListView,
   Screen,
-
   Text,
-
-
 } from "@/components"
 import { isRTL, translate } from "@/i18n"
 import { useStores } from "../../models"
@@ -40,37 +33,65 @@ import { useAuth } from "@/contexts/useAuth"
 import { CitySelector } from "./CitySelector"
 import { TripCard } from "./TripCard"
 
-
-
 export const HomeScreen: FC<TabScreenProps<"Home">> = observer(
   function DriverListScreen(_props) {
     const { tripStore } = useStores()
     const { themed, theme: { colors } } = useAppTheme()
     const { user } = useAuth()
+    const { navigation } = _props
     const [refreshing, setRefreshing] = useState(false)
     const [isLoading, setIsLoading] = useState(false)
     const [actualLocation, setActualLocation] = useState("")
     const [destinationLocation, setDestinationLocation] = useState("")
-
 
     // initially, kick off a background refresh without the refreshing UI
     useEffect(() => {
       ; (async function load() {
         setIsLoading(true)
         await tripStore.fetchTrips()
-
         setIsLoading(false)
       })()
     }, [tripStore])
+
+    // Handle origin change
+    const handleOriginChange = async (text: string) => {
+      setActualLocation(text)
+      await searchTrips(text, destinationLocation)
+    }
+
+    // Handle destination change
+    const handleDestinationChange = async (text: string) => {
+      setDestinationLocation(text)
+      await searchTrips(actualLocation, text)
+    }
+
+    // Search trips with current filters
+    const searchTrips = async (origin: string, destination: string) => {
+      setIsLoading(true)
+      tripStore.setSearchParams({
+        origin,
+        destination,
+        // Keep any existing date filter
+        departureDate: tripStore.searchParams.departureDate
+      })
+      await tripStore.searchTrips()
+      setIsLoading(false)
+    }
 
     // simulate a longer refresh, if the refresh is too fast for UX
     async function manualRefresh() {
       setRefreshing(true)
       await Promise.all([tripStore.fetchTrips(), delay(750)])
       setRefreshing(false)
+      // Reset the search filters
+      setActualLocation("")
+      setDestinationLocation("")
+      tripStore.setSearchParams({
+        origin: "",
+        destination: "",
+        departureDate: ""
+      })
     }
-
-
 
     const ButtonDateLeftAccessory: ComponentType<ButtonAccessoryProps> = useMemo(
       () =>
@@ -88,20 +109,17 @@ export const HomeScreen: FC<TabScreenProps<"Home">> = observer(
       [colors.text],
     )
 
-
     return (
       <Screen preset="scroll" safeAreaEdges={["top"]} contentContainerStyle={$styles.flex1}>
-
         <ListView<Trip>
           data={tripStore.tripsForList.slice()}
           extraData={tripStore.trips.length}
           refreshing={refreshing}
-          
           estimatedItemSize={177}
           onRefresh={manualRefresh}
           ListEmptyComponent={
             isLoading ? (
-              <ActivityIndicator />
+              <ActivityIndicator style={{marginTop:32}} size={"large"} color={colors.palette.primary}/>
             ) : (
               <EmptyState
                 preset="generic"
@@ -128,40 +146,66 @@ export const HomeScreen: FC<TabScreenProps<"Home">> = observer(
               <View style={themed($heading)}>
                 <View style={[$styles.row, { display: 'flex', justifyContent: 'space-between', alignItems: "center" }]}>
                   <Text preset="heading" style={themed($greeting)} tx={Greeting()} />
-
                   <Image source={user?.image ? { uri: user.image } : require("../../../assets/images/no-profile.png")} style={themed($itemProfileImage)} />
-
-
                 </View>
 
                 <View style={themed($search)}>
                   <CitySelector
                     value={actualLocation}
-                    onChangeText={setActualLocation}
+                    onChangeText={handleOriginChange}
                     labelTx="HomeScreen:actualLocationFieldLabel"
                     placeholderTx="HomeScreen:actualLocationFieldPlaceholder"
                   />
                   
                   <CitySelector
                     value={destinationLocation}
-                    onChangeText={setDestinationLocation}
+                    onChangeText={handleDestinationChange}
                     labelTx="HomeScreen:destinationLocationFieldLabel"
                     placeholderTx="HomeScreen:destinationLocationFieldPlaceholder"
                   />
                 </View>
-
               </View>
               <View style={themed($dateSelector)}>
                 <Text weight="bold" size="md" tx="HomeScreen:availableDates" />
                 <View style={[$styles.row, { gap: 10 }]}>
+                <Button
+                    onPress={() => { 
+                      const today = new Date().toISOString().split('T')[0];
+                      tripStore.setSearchParams({
+                        ...tripStore.searchParams,
+                        departureDate: ''
+                      });
+                      searchTrips(actualLocation, destinationLocation);
+                    }}
+                    onLongPress={() => { }}
+                    style={themed([$dateButton])}
+                    accessibilityLabel={
+                      "HomeScreen:accessibility.anyDateButton"
+                    }
+                  >
+                    <Text
+                      size="xs"
+                      accessibilityLabel={"HomeScreen:accessibility.anyDateButton"}
+                      weight="bold"
+                      tx={
+                        "HomeScreen:anyDateButton"
+                      }
+                    />
+                  </Button>
                   <Button
-                    onPress={() => { }}
+                    onPress={() => { 
+                      const today = new Date().toISOString().split('T')[0];
+                      tripStore.setSearchParams({
+                        ...tripStore.searchParams,
+                        departureDate: today
+                      });
+                      searchTrips(actualLocation, destinationLocation);
+                    }}
                     onLongPress={() => { }}
                     style={themed([$dateButton])}
                     accessibilityLabel={
                       "HomeScreen:accessibility.todayDateButton"
                     }
-
                   >
                     <Text
                       size="xs"
@@ -174,13 +218,21 @@ export const HomeScreen: FC<TabScreenProps<"Home">> = observer(
                   </Button>
 
                   <Button
-                    onPress={() => { }}
+                    onPress={() => { 
+                      const tomorrow = new Date();
+                      tomorrow.setDate(tomorrow.getDate() + 1);
+                      const tomorrowStr = tomorrow.toISOString().split('T')[0];
+                      tripStore.setSearchParams({
+                        ...tripStore.searchParams,
+                        departureDate: tomorrowStr
+                      });
+                      searchTrips(actualLocation, destinationLocation);
+                    }}
                     onLongPress={() => { }}
                     style={themed([$dateButton])}
                     accessibilityLabel={
                       "HomeScreen:accessibility.tomorrowDateButton"
                     }
-
                   >
                     <Text
                       size="xs"
@@ -191,8 +243,16 @@ export const HomeScreen: FC<TabScreenProps<"Home">> = observer(
                       }
                     />
                   </Button>
-                  <Button
-                    onPress={() => { }}
+                  {/* <Button
+                    onPress={() => { 
+                      // This would typically open a date picker
+                      // For now, just clear the date filter
+                      tripStore.setSearchParams({
+                        ...tripStore.searchParams,
+                        departureDate: ""
+                      });
+                      searchTrips(actualLocation, destinationLocation);
+                    }}
                     onLongPress={() => { }}
                     style={[themed([$dateButton]), { gap: 5 }]}
                     accessibilityLabel={
@@ -208,7 +268,7 @@ export const HomeScreen: FC<TabScreenProps<"Home">> = observer(
                         "HomeScreen:otherDateButton"
                       }
                     />
-                  </Button>
+                  </Button> */}
                 </View>
               </View>
             </>
@@ -216,7 +276,7 @@ export const HomeScreen: FC<TabScreenProps<"Home">> = observer(
           renderItem={({ item }) => (
             <TripCard
               trip={item}
-              onPress={() => { }}
+              onPress={() => {  navigation.navigate("Trip") }}
             />
           )}
         />
@@ -225,14 +285,9 @@ export const HomeScreen: FC<TabScreenProps<"Home">> = observer(
   },
 )
 
-
-
 // #region Styles
-
-
 const $greeting: ThemedStyle<TextStyle> = ({  }) => ({
   color: '#FFFFFF',
-
 })
 
 const $heading: ThemedStyle<ViewStyle> = ({ spacing, colors }) => ({
@@ -244,7 +299,6 @@ const $heading: ThemedStyle<ViewStyle> = ({ spacing, colors }) => ({
 
 const $dateSelector: ThemedStyle<ViewStyle> = ({ spacing }) => ({
   paddingHorizontal: spacing.xl,
-
 })
 
 const $itemProfileImage: ThemedStyle<ImageStyle> = ({ }) => ({
@@ -255,10 +309,6 @@ const $itemProfileImage: ThemedStyle<ImageStyle> = ({ }) => ({
 const $search: ThemedStyle<ViewStyle> = ({ spacing }) => ({
   marginTop: spacing.md,
 })
-
-
-
-
 
 const $dateButton: ThemedStyle<ViewStyle> = ({ colors, spacing }) => ({
   borderRadius: 17,
@@ -272,8 +322,6 @@ const $dateButton: ThemedStyle<ViewStyle> = ({ colors, spacing }) => ({
   minHeight: 32,
   alignSelf: "flex-start",
 })
-
-
 
 const $emptyState: ThemedStyle<ViewStyle> = ({ spacing }) => ({
   marginTop: spacing.xxl,

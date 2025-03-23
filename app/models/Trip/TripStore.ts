@@ -14,7 +14,7 @@ export const TripStoreModel = types
     searchParams: types.model({
       origin: types.optional(types.string, ""),
       destination: types.optional(types.string, ""),
-      departureDate: types.optional(types.string, "")
+      departureDate: types.optional(types.string, ""),
     })
   })
   .actions(withSetPropAction)

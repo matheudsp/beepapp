@@ -99,6 +99,7 @@ const pt = {
     actualLocationFieldPlaceholder: "Onde você está?",
     onlyFavorites: "Mostrar apenas favoritos",
     availableDates: "Datas disponíveis",
+    anyDateButton: "Qualquer data",
     todayDateButton: "Hoje",
     tomorrowDateButton: "Amanhã",
     otherDateButton: "Outra",
@@ -106,7 +107,7 @@ const pt = {
     unfavoriteButton: "Desfavoritar",
     accessibility: {
       todayDateButton: "Exibir somente viagens na data de hoje",
-
+      anyDateButton:"Exibir todas viagens",
       tomorrowDateButton: "Exibir somente viagens na data de amanhã",
       otherDateButton: "Exibir somente viagens na data específica",
       cardHint:
